@@ -1,0 +1,6 @@
+Create your data transformation pipeline here.
+- Download necessary data
+- Create a jupyter notebook where you document the transformation
+This is the most important part of the assignment.
+- Add any other code you might need, e.g your API, etc. 
+
