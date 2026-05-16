@@ -1,7 +1,17 @@
+# virtual environments
 venv/
+.venv/
 env/
+
+# python cache
 __pycache__/
+*.pyc
+
+# jupyter
 .ipynb_checkpoints/
+
+# environment variables
 .env
 
+# temporary/intermediate data
 part_2/data/interim/
