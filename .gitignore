@@ -1,4 +1,7 @@
-venv
-env
-*pycache*
+venv/
+env/
+__pycache__/
+.ipynb_checkpoints/
 .env
+
+part_2/data/interim/
