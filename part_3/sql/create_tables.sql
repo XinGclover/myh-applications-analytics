@@ -6,7 +6,7 @@ CREATE TABLE curated.yh_applications (
     application_id SERIAL PRIMARY KEY,
 
     -- source metadata
-    source_year VARCHAR(4) NOT NULL,
+    source_year INTEGER NOT NULL,
     source_file TEXT NOT NULL,
     source_sheet TEXT NOT NULL,
 

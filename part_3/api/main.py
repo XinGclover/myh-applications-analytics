@@ -1,4 +1,7 @@
+import pandas as pd
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.responses import StreamingResponse
+from io import StringIO
 from .queries import (
     get_applications,
     get_application_by_id,
@@ -32,7 +35,7 @@ def applications(
     )
 
 
-@app.get("/applications/by-id")
+@app.get("/applications/{diarienummer:path}")
 def application_by_id(diarienummer: str):
     application = get_application_by_id(diarienummer)
 
@@ -45,3 +48,22 @@ def application_by_id(diarienummer: str):
 @app.get("/stats/by-year")
 def stats_by_year():
     return get_stats_by_year()
+
+
+@app.get("/export/applications")
+def export_applications(year: int | None = None):
+
+    data = get_applications(year=year)
+
+    df = pd.DataFrame(data)
+
+    output = StringIO()
+    df.to_csv(output, index=False)
+
+    output.seek(0)
+
+    return StreamingResponse(
+        output,
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=applications.csv"},
+    )

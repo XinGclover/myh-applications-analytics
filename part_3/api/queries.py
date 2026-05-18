@@ -13,7 +13,7 @@ def get_applications(year=None, county=None, study_form=None, limit=100):
     params = {}
 
     if year:
-        query += " AND year = :year"
+        query += " AND source_year = :year"
         params["year"] = year
 
     if county:
