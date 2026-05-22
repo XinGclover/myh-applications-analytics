@@ -1,6 +1,6 @@
 import pandas as pd
 from sqlalchemy import text
-from part_3.api.db import engine
+from src.myh_db.db import engine
 
 
 def get_applications(year=None, county=None, study_form=None, limit=100):
