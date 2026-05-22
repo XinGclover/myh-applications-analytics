@@ -1,0 +1,102 @@
+import pandas as pd
+from sqlalchemy import text
+
+from src.myh_db.db import engine
+
+
+def get_applications(
+    year: int | None = None,
+    decision: str | None = None,
+    region: str | None = None,
+    municipality: str | None = None,
+    provider: str | None = None,
+    study_form: str | None = None,
+    limit: int = 100,
+) -> list[dict]:
+    query = """
+        SELECT
+            application_id,
+            source_year,
+            diarienummer,
+            utbildningsnamn,
+            utbildningsomrade,
+            beslut,
+            decision_normalized,
+            is_approved,
+            kommun,
+            lan,
+            studieform,
+            study_form_normalized,
+            utbildningsanordnare
+        FROM curated.yh_applications
+        WHERE 1 = 1
+    """
+
+    params = {}
+
+    if year:
+        query += " AND source_year = :year"
+        params["year"] = year
+
+    if decision:
+        query += " AND decision_normalized ILIKE :decision"
+        params["decision"] = decision
+
+    if region:
+        query += " AND lan ILIKE :region"
+        params["region"] = f"%{region}%"
+
+    if municipality:
+        query += " AND kommun ILIKE :municipality"
+        params["municipality"] = f"%{municipality}%"
+
+    if provider:
+        query += " AND utbildningsanordnare ILIKE :provider"
+        params["provider"] = f"%{provider}%"
+
+    if study_form:
+        query += " AND study_form_normalized ILIKE :study_form"
+        params["study_form"] = study_form
+
+    query += " ORDER BY source_year DESC, application_id ASC LIMIT :limit"
+    params["limit"] = limit
+
+    df = pd.read_sql(text(query), engine, params=params)
+    return df.to_dict(orient="records")
+
+
+def get_application_by_diarienummer(diarienummer: str) -> dict | None:
+    query = text("""
+        SELECT
+            application_id,
+            source_year,
+            diarienummer,
+            utbildningsnamn,
+            utbildningsomrade,
+            beslut,
+            decision_normalized,
+            is_approved,
+            kommun,
+            lan,
+            studieform,
+            study_form_normalized,
+            utbildningsanordnare
+        FROM curated.yh_applications
+        WHERE TRIM(diarienummer) = TRIM(:diarienummer)
+        LIMIT 1;
+    """)
+
+    with engine.begin() as conn:
+        result = (
+            conn.execute(
+                query,
+                {"diarienummer": diarienummer},
+            )
+            .mappings()
+            .first()
+        )
+
+    if not result:
+        return None
+
+    return dict(result)
