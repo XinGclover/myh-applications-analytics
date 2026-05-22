@@ -54,6 +54,34 @@ def build_validation_summary(df):
                 "affected_rows": df["sun5_inriktning"].isna().sum(),
                 "severity": "info",
             },
+            {
+                "check": "utbildningsnamn_max_length",
+                "affected_rows": (
+                    df["utbildningsnamn"].dropna().str.len().gt(250).sum()
+                ),
+                "max_length_found": (df["utbildningsnamn"].dropna().str.len().max()),
+                "severity": "warning",
+            },
+            {
+                "check": "utbildningsanordnare_max_length",
+                "affected_rows": (
+                    df["utbildningsanordnare"].dropna().str.len().gt(100).sum()
+                ),
+                "max_length_found": (
+                    df["utbildningsanordnare"].dropna().str.len().max()
+                ),
+                "severity": "warning",
+            },
+            {
+                "check": "sun5_inriktning_namn_max_length",
+                "affected_rows": (
+                    df["sun5_inriktning_namn"].dropna().str.len().gt(100).sum()
+                ),
+                "max_length_found": (
+                    df["sun5_inriktning_namn"].dropna().str.len().max()
+                ),
+                "severity": "warning",
+            },
         ]
     )
 
