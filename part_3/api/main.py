@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from part_3.api.routers.application_router import router as application_router
 from part_3.api.routers.note_router import router as note_router
 from part_3.api.routers.stats_router import router as stats_router
+from part_3.api.routers.export_router import router as export_router
 
 
 app = FastAPI(
@@ -13,3 +14,4 @@ app = FastAPI(
 app.include_router(application_router)
 app.include_router(note_router)
 app.include_router(stats_router)
+app.include_router(export_router)
