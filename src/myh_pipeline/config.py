@@ -11,9 +11,10 @@ CURATED_DATA_PATH = DATA_DIR / "curated"
 
 
 BASELINE_YEARS = [2022, 2023, 2024, 2025]
+FULL_REFRESH_YEARS = [2021, 2022, 2023, 2024, 2025]
 
 YEAR_CONFIG = {
-    2021: {"sheet_name": "Tabell 3", "header_row": 4},
+    2021: {"sheet_name": "Tabell 3", "header_row": 0},
     2022: {"sheet_name": "Tabell 3", "header_row": 0},
     2023: {"sheet_name": "Tabell 3", "header_row": 5},
     2024: {"sheet_name": "Tabell 3", "header_row": 5},

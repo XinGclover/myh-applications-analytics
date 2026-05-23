@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 
-from part_3.api.schemas.application_schema import ApplicationResponse
+from part_3.api.schemas.response_schema import ApplicationResponse
 from part_3.api.services.application_service import (
     get_applications,
     get_application_by_diarienummer,

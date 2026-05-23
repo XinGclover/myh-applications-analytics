@@ -14,4 +14,17 @@ The project intentionally uses raw SQL instead of a full ORM approach in order t
 - strengthen SQL fundamentals
 - keep database behavior explicit
 - simplify debugging
-- maintain full control over generated queries
+- maintain full control over generated queries∏
+
+
+### POST /refresh is an operational endpoint that triggers the full curated dataset pipeline.
+
+When called, the endpoint:
+- reads all configured Excel source years from YEAR_CONFIG,
+- cleans and harmonizes the raw data,
+- applies enrichment logic,
+- validates the final curated dataset,
+- truncates the existing curated database table,
+- reloads the refreshed curated dataset into PostgreSQL.
+
+This makes the API more operational and reusable, because the database can be refreshed from source files without manually running the notebook.

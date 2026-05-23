@@ -1,5 +1,5 @@
 import pandas as pd
-from src.myh_pipeline.config import YEAR_CONFIG
+from src.myh_pipeline.config import YEAR_CONFIG, BASELINE_YEARS, RAW_DATA_PATH
 
 
 def load_excel(file):
@@ -34,6 +34,29 @@ def load_excel(file):
         print(f"Failed to load {file.name}: {e}")
 
         return None
+
+
+def load_all_years(years=None):
+    """
+    Load all configured Excel source files.
+    """
+
+    if years is None:
+        years = BASELINE_YEARS
+
+    excel_files = RAW_DATA_PATH.glob("*.xlsx")
+
+    dfs = {}
+
+    for file in excel_files:
+        year = int(file.stem[-4:])
+
+        if year not in years:
+            continue
+
+        dfs[year] = load_excel(file)
+
+    return dfs
 
 
 def check_schema(dfs):

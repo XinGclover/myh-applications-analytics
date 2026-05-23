@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 
-from part_3.api.schemas.note_schema import (
+from part_3.api.schemas.request_schema import (
     ApplicationNoteCreate,
     ApplicationNoteResponse,
     ApplicationNoteUpdate,

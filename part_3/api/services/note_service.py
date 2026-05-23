@@ -1,7 +1,10 @@
 from sqlalchemy import text
 
 from src.myh_db.db import engine
-from part_3.api.schemas.note_schema import ApplicationNoteCreate, ApplicationNoteUpdate
+from part_3.api.schemas.request_schema import (
+    ApplicationNoteCreate,
+    ApplicationNoteUpdate,
+)
 
 
 def create_note(diarienummer: str, note: ApplicationNoteCreate) -> dict:

@@ -15,3 +15,10 @@ class ApplicationResponse(BaseModel):
     studieform: str
     study_form_normalized: str
     utbildningsanordnare: str
+
+    
+
+class RefreshResponse(BaseModel):
+    status: str
+    rows_inserted: int
+    validation_checks: int

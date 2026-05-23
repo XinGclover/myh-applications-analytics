@@ -1,5 +1,10 @@
 import pandas as pd
-from src.myh_pipeline.config import COLUMN_MAPPING, DECISION_MAPPING, STUDY_FORM_MAPPING
+from src.myh_pipeline.config import (
+    COLUMN_MAPPING,
+    DECISION_MAPPING,
+    STUDY_FORM_MAPPING,
+    TARGET_COLUMNS,
+)
 
 
 # harmonize single dataframe
@@ -37,3 +42,13 @@ def harmonize_schema(df, target_columns):
     df = df[target_columns]
 
     return df
+
+
+def harmonize_all_years(dfs):
+    harmonized_dfs = {}
+    for year, df in dfs.items():
+        harmonized_df = harmonize_schema(df=df, target_columns=TARGET_COLUMNS)
+
+        harmonized_dfs[year] = harmonized_df
+
+    return harmonized_dfs
