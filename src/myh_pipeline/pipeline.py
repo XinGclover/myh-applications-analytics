@@ -30,11 +30,3 @@ def build_curated_dataset():
     return curated_df, validation_summary
 
 
-# if __name__ == "__main__":
-#     curated_df, validation_summary = build_curated_dataset()
-
-#     print("Pipeline completed.")
-#     print(f"Rows: {len(curated_df)}")
-#     print(f"Columns: {len(curated_df.columns)}")
-#     print(curated_df.head())
-#     print(validation_summary)

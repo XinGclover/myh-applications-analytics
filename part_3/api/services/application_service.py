@@ -2,6 +2,7 @@ import pandas as pd
 from sqlalchemy import text
 
 from src.myh_db.db import engine
+from part_3.api.utils.response import dataframe_to_records
 
 
 def get_applications(
@@ -62,7 +63,7 @@ def get_applications(
     params["limit"] = limit
 
     df = pd.read_sql(text(query), engine, params=params)
-    return df.to_dict(orient="records")
+    return dataframe_to_records(df)
 
 
 def get_application_by_diarienummer(diarienummer: str) -> dict | None:

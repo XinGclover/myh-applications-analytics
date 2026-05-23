@@ -2,6 +2,7 @@ import pandas as pd
 from sqlalchemy import text
 
 from src.myh_db.db import engine
+from part_3.api.utils.response import dataframe_to_records
 
 
 def get_stats_by_year() -> list[dict]:
@@ -21,7 +22,7 @@ def get_stats_by_year() -> list[dict]:
     """
 
     df = pd.read_sql(text(query), engine)
-    return df.to_dict(orient="records")
+    return dataframe_to_records(df)
 
 
 def get_stats_by_education_area() -> list[dict]:
@@ -41,4 +42,4 @@ def get_stats_by_education_area() -> list[dict]:
     """
 
     df = pd.read_sql(text(query), engine)
-    return df.to_dict(orient="records")
+    return dataframe_to_records(df)
