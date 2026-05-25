@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 
-APPLICATION_LIMIT = 5000
+APPLICATION_LIMIT = 50000
 
 APPLICATIONS_ENDPOINT = "/applications"
 PROVIDERS_ENDPOINT = "/providers"
