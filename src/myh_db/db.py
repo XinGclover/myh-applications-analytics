@@ -18,4 +18,8 @@ if not DATABASE_URL:
         "DATABASE_URL is not configured. Set it in .env before using the database."
     )
 
-engine = create_engine(DATABASE_URL)
+engine = create_engine(
+    DATABASE_URL,
+    pool_pre_ping=True,
+    pool_recycle=300,
+)
