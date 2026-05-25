@@ -26,6 +26,10 @@ def stats_by_year(
     provider: str | None = None,
     study_form: str | None = None,
 ):
+    """
+    Serve yearly application statistics
+    filtered by dashboard query parameters.
+    """
     return get_stats_by_year(
         region=region,
         municipality=municipality,
@@ -47,6 +51,10 @@ def stats_by_education_area(
     provider: str | None = None,
     study_form: str | None = None,
 ):
+    """
+    Serve education-area statistics
+    filtered by dashboard query parameters.
+    """
     return get_stats_by_education_area(
         year=year,
         region=region,

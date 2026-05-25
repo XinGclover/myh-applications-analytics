@@ -5,6 +5,10 @@ from src.myh_pipeline.pipeline import build_curated_dataset
 
 
 def refresh_database() -> dict:
+    """
+    Rebuild the curated dataset and reload PostgreSQL tables
+    with refreshed application data.
+    """
     curated_df, validation_summary = build_curated_dataset()
 
     with engine.begin() as conn:

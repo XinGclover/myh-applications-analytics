@@ -9,11 +9,19 @@ except ImportError:
 
 
 def select_filter(label: str, options: list, key: str) -> str | int | None:
+    """
+    Render a sidebar selectbox and convert All
+    into None for API query parameters.
+    """
     selected = st.sidebar.selectbox(label, ["All", *options], key=key)
     return None if selected == "All" else selected
 
 
 def get_filter_options(year_df, all_applications_df, providers_df) -> dict:
+    """
+    Build sidebar filter options from initial API data
+    for years, locations, decisions, providers, and study forms.
+    """
     year_options = []
     if not year_df.empty and "source_year" in year_df:
         year_options = sorted(year_df["source_year"].dropna().astype(int).unique().tolist(), reverse=True)
@@ -44,6 +52,10 @@ def get_filter_options(year_df, all_applications_df, providers_df) -> dict:
 
 
 def get_municipality_options(all_applications_df, selected_region: str | None) -> list:
+    """
+    Return municipality options, narrowed to the selected region
+    when a region filter is active.
+    """
     if all_applications_df.empty or "kommun" not in all_applications_df:
         return []
 
@@ -55,6 +67,10 @@ def get_municipality_options(all_applications_df, selected_region: str | None) -
 
 
 def render_sidebar_filters(options: dict, all_applications_df) -> dict:
+    """
+    Render dashboard filters and return selected values
+    using keys expected by the API.
+    """
     st.sidebar.header("Filters")
 
     selected_year = select_filter("Year", options["years"], "year")
@@ -86,6 +102,10 @@ def build_query_params(
     allowed_keys: list[str],
     include_limit: bool = False,
 ) -> dict:
+    """
+    Build endpoint-specific query parameters
+    from selected dashboard filters.
+    """
     params = {}
 
     if include_limit:

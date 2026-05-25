@@ -2,6 +2,10 @@ from __future__ import annotations
 
 
 def calculate_kpis(applications_df) -> dict:
+    """
+    Calculate dashboard KPIs from filtered application rows
+    including approval rate and provider count.
+    """
     total_applications = len(applications_df)
     approved_applications = 0
     approval_rate = 0.0
@@ -23,4 +27,5 @@ def calculate_kpis(applications_df) -> dict:
 
 
 def format_rate(value: float) -> str:
+    """Format a percentage value for KPI display."""
     return f"{value:.1f}%"

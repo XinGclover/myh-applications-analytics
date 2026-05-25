@@ -28,6 +28,10 @@ def create_application_note(
     diarienummer: str,
     note: ApplicationNoteCreate,
 ):
+    """
+    Create a note attached to an application
+    and return the stored record.
+    """
     return create_note(diarienummer, note)
 
 
@@ -36,6 +40,9 @@ def create_application_note(
     response_model=list[ApplicationNoteResponse],
 )
 def get_application_notes(diarienummer: str):
+    """
+    Serve notes attached to one application.
+    """
     return get_notes_by_diarienummer(diarienummer)
 
 
@@ -48,6 +55,10 @@ def update_application_note(
     note_id: int,
     note: ApplicationNoteUpdate,
 ):
+    """
+    Update a note attached to an application
+    or raise 404 when it is missing.
+    """
     updated_note = update_note(diarienummer, note_id, note)
 
     if not updated_note:
@@ -67,6 +78,10 @@ def delete_application_note(
     diarienummer: str,
     note_id: int,
 ):
+    """
+    Delete a note attached to an application
+    or raise 404 when it is missing.
+    """
     deleted = delete_note(diarienummer, note_id)
 
     if not deleted:

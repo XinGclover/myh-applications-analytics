@@ -4,7 +4,8 @@ from src.myh_pipeline.config import YEAR_CONFIG, BASELINE_YEARS, RAW_DATA_PATH
 
 def load_excel(file):
     """
-    Load and standardize one Excel sheet.
+    Load one configured MYH Excel sheet
+    and add source traceability columns.
     """
 
     print(f"Loading file: {file.name}")
@@ -38,7 +39,8 @@ def load_excel(file):
 
 def load_all_years(years=None):
     """
-    Load all configured Excel source files.
+    Load configured source files for the selected years
+    into a dictionary keyed by year.
     """
 
     if years is None:
@@ -60,6 +62,10 @@ def load_all_years(years=None):
 
 
 def check_schema(dfs):
+    """
+    Summarize dataframe shapes and columns
+    for quick schema comparison across years.
+    """
     schema_df = pd.DataFrame(
         [
             {

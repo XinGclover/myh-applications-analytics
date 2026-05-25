@@ -13,6 +13,10 @@ def build_stats_filters(
     provider=None,
     study_form=None,
 ) -> tuple[str, dict]:
+    """
+    Build reusable SQL filter clauses
+    for statistics endpoints.
+    """
     filters = []
     params = {}
 
@@ -54,6 +58,10 @@ def get_stats_by_year(
     provider=None,
     study_form=None,
 ) -> list[dict]:
+    """
+    Return yearly application statistics
+    with approval counts and rates.
+    """
     where_clause, params = build_stats_filters(
         region=region,
         municipality=municipality,
@@ -89,6 +97,10 @@ def get_stats_by_education_area(
     provider=None,
     study_form=None,
 ) -> list[dict]:
+    """
+    Return education-area statistics
+    filtered by active dashboard selections.
+    """
     where_clause, params = build_stats_filters(
         year=year,
         region=region,

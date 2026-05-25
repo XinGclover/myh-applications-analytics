@@ -7,6 +7,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 def load_data():
+    """
+    Reload the curated applications CSV
+    into the PostgreSQL applications table.
+    """
     file_path = BASE_DIR / "part_2" / "data" / "curated" / "curated_applications.csv"
 
     try:

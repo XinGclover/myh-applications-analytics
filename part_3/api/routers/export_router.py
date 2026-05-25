@@ -22,6 +22,10 @@ def export_applications(
     provider: str | None = None,
     study_form: str | None = None,
 ):
+    """
+    Export filtered application records as a CSV response
+    for dashboard downloads.
+    """
     data = get_applications(
         year=year,
         decision=decision,
@@ -49,6 +53,10 @@ def export_applications(
 
 @router.get("/stats/by-year")
 def export_stats_by_year():
+    """
+    Export yearly statistics as a CSV response
+    for dashboard downloads.
+    """
     data = get_stats_by_year()
 
     df = pd.DataFrame(data)

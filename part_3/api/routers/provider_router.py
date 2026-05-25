@@ -13,11 +13,19 @@ router = APIRouter(
 
 @router.get("")
 def list_providers():
+    """
+    Serve providers with application counts
+    for dashboard provider selectors.
+    """
     return get_providers()
 
 
 @router.get("/{provider_name}/applications")
 def list_provider_applications(provider_name: str):
+    """
+    Serve applications for one provider
+    or raise 404 when none are found.
+    """
     applications = get_provider_applications(provider_name)
 
     if not applications:

@@ -94,30 +94,6 @@ Dashboard KPIs include:
 - approval rate
 - providers count
 
-## Running the Streamlit App
-
-Start the frontend from the project root:
-
-```bash
-python -m streamlit run streamlit_app/app.py
-```
-
-The FastAPI backend must be running separately.
-
-The frontend communicates with the API through `API_BASE_URL`.
-
-Default:
-
-```text
-http://localhost:8000
-```
-
-For full setup and environment commands, see:
-
-```text
-docs/deployment.md
-```
-
 ## Page Responsibilities
 
 ### Landing or README Page

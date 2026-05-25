@@ -153,6 +153,10 @@ SECTOR_KEYWORDS = {
 
 
 def classify_scope(points):
+    """
+    Classify education length buckets
+    from YH point values.
+    """
     if pd.isna(points):
         return "unknown"
     if points < 200:
@@ -163,6 +167,10 @@ def classify_scope(points):
 
 
 def classify_sector(name):
+    """
+    Classify education names into broad sector categories
+    using project keyword rules.
+    """
     if pd.isna(name):
         return "unknown"
 
@@ -176,6 +184,10 @@ def classify_sector(name):
 
 
 def enrich_dataset(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Add analysis-ready fields used by the API,
+    database, and dashboard.
+    """
     df = df.copy()
 
     df["is_approved"] = df["decision_normalized"].eq("approved")

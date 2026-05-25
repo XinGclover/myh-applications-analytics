@@ -14,6 +14,10 @@ def get_applications(
     study_form: str | None = None,
     limit: int = 100,
 ) -> list[dict]:
+    """
+    Return filtered application records from the curated dataset.
+    Supports dashboard tables and export queries.
+    """
     query = """
         SELECT
             application_id,
@@ -67,6 +71,10 @@ def get_applications(
 
 
 def get_application_by_diarienummer(diarienummer: str) -> dict | None:
+    """
+    Return one application record by diarienummer
+    or None when no match exists.
+    """
     query = text("""
         SELECT
             application_id,

@@ -25,6 +25,10 @@ def list_applications(
     study_form: str | None = None,
     limit: int = 100,
 ):
+    """
+    Serve filtered application records
+    for dashboard and export consumers.
+    """
     return get_applications(
         year=year,
         decision=decision,
@@ -41,6 +45,10 @@ def list_applications(
     response_model=ApplicationResponse,
 )
 def get_application(diarienummer: str):
+    """
+    Serve one application by diarienummer
+    or raise 404 when it is missing.
+    """
     application = get_application_by_diarienummer(diarienummer)
 
     if not application:

@@ -4,6 +4,10 @@ import pandas as pd
 
 
 def build_validation_summary(df):
+    """
+    Build validation checks for key curated fields
+    before database loading.
+    """
 
     validation_summary = pd.DataFrame(
         [

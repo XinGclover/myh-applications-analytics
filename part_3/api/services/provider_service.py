@@ -7,6 +7,10 @@ from part_3.api.utils.response import dataframe_to_records
 
 
 def get_providers() -> list[dict]:
+    """
+    Return providers with total and approved application counts
+    for dashboard selection lists.
+    """
     query = text("""
         SELECT
             utbildningsanordnare AS provider_name,
@@ -23,6 +27,10 @@ def get_providers() -> list[dict]:
 
 
 def get_provider_applications(provider_name: str) -> list[dict]:
+    """
+    Return applications matching a provider name
+    for provider drilldown views.
+    """
     query = text("""
         SELECT *
         FROM curated.yh_applications

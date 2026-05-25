@@ -12,6 +12,10 @@ SQL_PATH = PROJECT_ROOT / "part_3" / "sql" / "create_tables.sql"
 
 
 def create_database_if_not_exists():
+    """
+    Create the configured PostgreSQL database
+    when it is not already present.
+    """
     con = psycopg2.connect(
         dbname="postgres",
         user=DB_USER,
@@ -38,6 +42,10 @@ def create_database_if_not_exists():
 
 
 def create_tables():
+    """
+    Apply the curated database schema
+    from the project SQL file.
+    """
     con = psycopg2.connect(
         dbname=DB_NAME,
         user=DB_USER,

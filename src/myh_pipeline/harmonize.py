@@ -9,6 +9,10 @@ from src.myh_pipeline.config import (
 
 # harmonize single dataframe
 def harmonize_schema(df, target_columns):
+    """
+    Map one yearly dataframe to the target schema
+    and add normalized decision fields.
+    """
 
     df = df.copy()
 
@@ -45,6 +49,10 @@ def harmonize_schema(df, target_columns):
 
 
 def harmonize_all_years(dfs):
+    """
+    Harmonize every loaded year
+    into the shared curated schema.
+    """
     harmonized_dfs = {}
     for year, df in dfs.items():
         harmonized_df = harmonize_schema(df=df, target_columns=TARGET_COLUMNS)

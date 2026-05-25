@@ -1,23 +1,38 @@
 from __future__ import annotations
 
 import os
-
-import pandas as pd
 import requests
+from dotenv import load_dotenv
+import pandas as pd
 import streamlit as st
 
+load_dotenv()
 
-DEFAULT_API_BASE_URL = "http://localhost:8000"
+
 REQUEST_TIMEOUT_SECONDS = 10
 REFRESH_TIMEOUT_SECONDS = 120
 EXPORT_TIMEOUT_SECONDS = 30
 
 
 def get_api_base_url() -> str:
-    return os.getenv("API_BASE_URL", DEFAULT_API_BASE_URL).rstrip("/")
+    """
+    Read the FastAPI base URL from environment variables
+    and normalize trailing slashes.
+    """
+
+    api_base_url = os.getenv("API_BASE_URL")
+
+    if not api_base_url:
+        raise ValueError("API_BASE_URL is not configured.")
+
+    return api_base_url.rstrip("/")
 
 
 def get_error_message(endpoint: str, exc: requests.RequestException) -> str:
+    """
+    Format request failures into Streamlit-friendly messages
+    with endpoint and response details when available.
+    """
     response = getattr(exc, "response", None)
     if response is None:
         return f"Could not call {endpoint}: {exc}"
@@ -32,6 +47,10 @@ def get_error_message(endpoint: str, exc: requests.RequestException) -> str:
 
 @st.cache_data(ttl=60)
 def get_json(endpoint: str, params: dict | None = None) -> tuple[list | dict | None, str | None]:
+    """
+    Fetch JSON data from the FastAPI backend
+    and return either parsed data or an error message.
+    """
     url = f"{get_api_base_url()}{endpoint}"
 
     try:
@@ -47,6 +66,10 @@ def get_json(endpoint: str, params: dict | None = None) -> tuple[list | dict | N
 
 
 def post_json(endpoint: str) -> tuple[dict | None, str | None]:
+    """
+    Send a POST request to the API
+    and return either parsed JSON or an error message.
+    """
     url = f"{get_api_base_url()}{endpoint}"
 
     try:
@@ -62,6 +85,10 @@ def post_json(endpoint: str) -> tuple[dict | None, str | None]:
 
 
 def get_file(endpoint: str, params: dict | None = None) -> tuple[bytes | None, str | None]:
+    """
+    Download binary content from an API endpoint
+    for Streamlit download buttons.
+    """
     url = f"{get_api_base_url()}{endpoint}"
 
     try:
@@ -74,6 +101,10 @@ def get_file(endpoint: str, params: dict | None = None) -> tuple[bytes | None, s
 
 
 def load_dataframe(endpoint: str, params: dict | None = None) -> pd.DataFrame:
+    """
+    Load list-style API responses into a dataframe
+    and show API errors inside Streamlit.
+    """
     data, error = get_json(endpoint, params=params)
 
     if error:

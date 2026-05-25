@@ -8,6 +8,10 @@ from part_3.api.schemas.request_schema import (
 
 
 def create_note(diarienummer: str, note: ApplicationNoteCreate) -> dict:
+    """
+    Create a stored note for an application
+    and return the inserted record.
+    """
     query = text("""
         INSERT INTO curated.application_notes (
             diarienummer,
@@ -41,6 +45,10 @@ def create_note(diarienummer: str, note: ApplicationNoteCreate) -> dict:
 
 
 def get_notes_by_diarienummer(diarienummer: str) -> list[dict]:
+    """
+    Return stored notes for one application
+    ordered by newest first.
+    """
     query = text("""
         SELECT
             note_id,
@@ -72,6 +80,10 @@ def update_note(
     note_id: int,
     note: ApplicationNoteUpdate,
 ) -> dict | None:
+    """
+    Update editable fields on an application note
+    and return the updated record.
+    """
     query = text("""
         UPDATE curated.application_notes
         SET
@@ -103,6 +115,10 @@ def update_note(
 
 
 def delete_note(diarienummer: str, note_id: int) -> bool:
+    """
+    Delete one application note
+    and report whether a row was removed.
+    """
     query = text("""
         DELETE FROM curated.application_notes
         WHERE diarienummer = :diarienummer

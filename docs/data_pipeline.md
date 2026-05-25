@@ -146,37 +146,6 @@ text fields fit the planned database schema
 
 ---
 
-## Database Loading
-
-There are two database loading commands.
-
-### First-time setup
-
-```bash
-python -m src.myh_db.bootstrap_db
-```
-
-This is used when setting up the project for the first time.
-
-It can:
-
-```text
-create the database
-create the tables
-load the curated CSV
-```
-
-### Reload existing database
-
-```bash
-python -m src.myh_db.load_to_db
-```
-
-This is used when the database and tables already exist.
-
-It reloads the curated CSV into the existing table.
-
----
 
 ## API Refresh Process
 

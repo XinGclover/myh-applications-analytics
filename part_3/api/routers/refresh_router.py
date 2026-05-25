@@ -11,6 +11,10 @@ router = APIRouter(
 
 @router.post("", response_model=RefreshResponse)
 def refresh():
+    """
+    Trigger a full pipeline refresh
+    and return operational load metadata.
+    """
     try:
         return refresh_database()
 

@@ -1,4 +1,8 @@
 def clean_column_name(col):
+    """
+    Normalize a source column name
+    into a consistent snake_case-style field.
+    """
     return (
         str(col)
         .strip()
@@ -15,6 +19,10 @@ def clean_column_name(col):
 
 
 def clean_string_values(df):
+    """
+    Trim whitespace in text columns
+    while leaving the input dataframe unchanged.
+    """
     df = df.copy()
 
     for col in df.select_dtypes(include=["object", "string"]).columns:
@@ -24,6 +32,10 @@ def clean_string_values(df):
 
 
 def clean_all_years(dfs):
+    """
+    Apply column and string cleanup
+    to every yearly source dataframe.
+    """
     standardized_dfs = {}
 
     for year, df in dfs.items():

@@ -9,6 +9,10 @@ from src.myh_pipeline.config import FULL_REFRESH_YEARS
 
 
 def build_curated_dataset():
+    """
+    Run the full MYH harmonization pipeline and return
+    the curated dataframe with validation results.
+    """
 
     dfs = load_all_years(years=FULL_REFRESH_YEARS)
 
@@ -28,5 +32,3 @@ def build_curated_dataset():
     validation_summary = build_validation_summary(curated_df)
 
     return curated_df, validation_summary
-
-
