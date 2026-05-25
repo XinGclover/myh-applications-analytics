@@ -42,119 +42,49 @@ project_root/
 
 ## Main Components
 
-### Data Preparation
-
-- `part_2/`
-  Contains notebook-based exploration and harmonization work.
-
-- `part_2/data/raw/`
-  Stores the original MYH Excel files.
-
-- `part_2/data/curated/`
-  Stores curated CSV outputs.
-
-- `src/myh_pipeline/`
-  Contains reusable pipeline modules for:
-  - loading
-  - cleaning
-  - harmonization
-  - enrichment
-  - validation
+| Layer | Location | Responsibility |
+|---|---|---|
+| Data Preparation | `part_2/` | Notebook-based exploration and harmonization |
+| Pipeline Modules | `src/myh_pipeline/` | Reusable loading, cleaning, enrichment, and validation logic |
+| Database | PostgreSQL | Store curated application data |
+| Database Utilities | `src/myh_db/` | Database setup and loading scripts |
+| API Backend | `part_3/api/` | FastAPI endpoints and business logic |
+| Frontend | `streamlit_app/` | Multipage Streamlit dashboard |
+| Documentation | `docs/` | Technical project documentation |
 
 ---
 
-### Database Layer
+## API Layer
 
-PostgreSQL stores the curated analytics dataset.
+The FastAPI backend uses a lightweight layered structure:
 
-Main responsibilities:
+| Module | Responsibility |
+|---|---|
+| `routers/` | API endpoints |
+| `services/` | SQL queries and business logic |
+| `schemas/` | Pydantic request and response models |
+| `main.py` | FastAPI application entry point |
 
-- store harmonized application data
-- support filtering and aggregation
-- provide data for the API layer
-
-Key files:
-
-```text
-src/myh_db/db.py
-src/myh_db/bootstrap_db.py
-src/myh_db/load_to_db.py
-part_3/sql/create_tables.sql
-```
-
----
-
-### API Layer
-
-The FastAPI backend lives in:
-
-```text
-part_3/api/
-```
-
-Structure:
-
-```text
-api/
-├── routers/
-├── services/
-├── schemas/
-└── main.py
-```
-
-Responsibilities:
-
-- `routers/`
-  Define HTTP endpoints.
-
-- `services/`
-  Contain SQL queries and business logic.
-
-- `schemas/`
-  Define Pydantic request and response models.
-
-- `main.py`
-  Creates the FastAPI application.
-
-The API exposes:
+Main API areas:
 
 - applications
 - statistics
 - providers
-- export endpoints
+- export
 - refresh operations
 
 ---
 
-### Streamlit Layer
+## Streamlit Layer
 
-The frontend lives in:
-
-```text
-streamlit_app/
-```
-
-Structure:
-
-```text
-streamlit_app/
-├── app.py
-├── pages/
-└── core/
-```
-
-Responsibilities:
-
-- `pages/`
-  Contains multipage Streamlit views.
-
-- `core/`
-  Contains reusable frontend logic such as:
-  - API client functions
-  - filters
-  - metrics
-  - configuration
-  - data loading
+| Module | Responsibility |
+|---|---|
+| `app.py` | Streamlit entry point |
+| `pages/` | User-facing pages |
+| `core/api_client.py` | API communication |
+| `core/data_loader.py` | Dashboard data loading |
+| `core/filters.py` | Sidebar filters |
+| `core/metrics.py` | KPI calculations |
 
 The frontend communicates with FastAPI through HTTP requests.
 
@@ -172,17 +102,15 @@ The project uses:
 
 instead of ORM models.
 
-This keeps SQL explicit and easier to debug and inspect during development.
+This keeps SQL explicit and easier to inspect during development.
 
 ### Thin Router Pattern
 
-Routers are intentionally lightweight.
-
-Business logic and SQL queries are placed in the service layer to keep the API structure modular and maintainable.
+Routers remain lightweight while query logic stays in the service layer.
 
 ### Multipage Streamlit Structure
 
-The Streamlit frontend is separated into pages and reusable core modules to avoid large monolithic dashboard files as the project grows.
+Frontend logic is separated into reusable modules to avoid large monolithic dashboard files.
 
 ---
 
@@ -192,5 +120,4 @@ For environment setup, database loading, notebook HTML export, and run commands,
 
 ```text
 docs/deployment.md
-```
 ```

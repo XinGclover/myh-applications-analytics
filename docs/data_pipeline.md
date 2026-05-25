@@ -2,119 +2,102 @@
 
 ## Purpose
 
-The data pipeline transforms raw MYH Excel files into one harmonized curated dataset.
-
-The curated dataset is used by:
-
-- PostgreSQL
-- FastAPI
-- Streamlit dashboard
+The data pipeline transforms raw MYH Excel files into one harmonized curated dataset used by PostgreSQL, FastAPI, and the Streamlit dashboard.
 
 ---
 
-## Main Idea
-
-The project has two ways to run the same data logic:
+## Pipeline Overview
 
 ```text
-Notebook
-    → used for explanation, inspection, and documentation
-
-Pipeline modules
-    → used for reusable execution, database loading, and API refresh
+Excel Files
+    ↓
+Load Data
+    ↓
+Clean Data
+    ↓
+Harmonize Columns
+    ↓
+Combine Years
+    ↓
+Enrich Dataset
+    ↓
+Validate Dataset
+    ↓
+Curated CSV
 ```
 
-The notebook shows the data preparation process step by step.
+---
 
-The Python modules in `src/myh_pipeline/` contain the reusable version of the same logic.
+## Notebook and Reusable Pipeline
+
+The project uses the same pipeline logic in two forms:
+
+| Component | Purpose |
+|---|---|
+| Notebook | Exploration, inspection, and documentation |
+| `src/myh_pipeline/` | Reusable execution for database loading and API refresh |
+
+The notebook explains the cleaning and harmonization process step by step, while the reusable modules support automated execution.
 
 ---
 
 ## Source and Output
 
-Raw Excel files are stored in:
-
-```text
-part_2/data/raw/
-```
-
-The curated output is stored in:
-
-```text
-part_2/data/curated/curated_applications.csv
-```
+| Type | Location |
+|---|---|
+| Raw Excel files | `part_2/data/raw/` |
+| Curated CSV output | `part_2/data/curated/curated_applications.csv` |
 
 ---
 
-## Notebook Process
+## Notebook Workflow
 
-The notebook in `part_2/notebooks/` is used to explain and inspect the pipeline.
+The notebook in `part_2/notebooks/` demonstrates:
 
-It shows:
+| Step | Description |
+|---|---|
+| 1 | Inspect Excel files and sheets |
+| 2 | Clean yearly datasets |
+| 3 | Harmonize columns across years |
+| 4 | Combine yearly dataframes |
+| 5 | Add enrichment fields |
+| 6 | Validate the curated dataset |
+| 7 | Export the curated CSV |
 
-1. which Excel files are used
-2. how sheets and columns are inspected
-3. how yearly files are cleaned
-4. how columns are harmonized across years
-5. how the yearly dataframes are combined
-6. which enrichment fields are added
-7. how the final curated dataset is validated
-8. how the curated CSV is exported
-
-The notebook is useful because it makes the data decisions visible.
-
-It is not only code execution, but also documentation of the cleaning and harmonization choices.
+The notebook acts both as data processing code and project documentation.
 
 ---
 
-## Reusable Pipeline
+## Reusable Pipeline Modules
 
-The reusable pipeline code lives in:
+The reusable pipeline lives in:
 
 ```text
 src/myh_pipeline/
 ```
 
-The main entry point is:
+Main pipeline entry point:
 
 ```text
 build_curated_dataset()
 ```
 
-This function runs the full process:
+### Main Modules
 
-```text
-Load raw Excel files
-    ↓
-Clean each year
-    ↓
-Harmonize columns
-    ↓
-Combine all years
-    ↓
-Add enrichment fields
-    ↓
-Validate the result
-    ↓
-Return curated dataframe and validation summary
-```
-
-The important modules are:
-
-```text
-load.py          reads Excel files
-clean.py         applies initial cleaning
-harmonize.py     standardizes columns across years
-enrich.py        adds analysis-ready fields
-validate.py      creates validation checks
-pipeline.py      coordinates the full process
-```
+| Module | Responsibility |
+|---|---|
+| `load.py` | Read Excel files |
+| `clean.py` | Apply initial cleaning |
+| `harmonize.py` | Standardize columns across years |
+| `enrich.py` | Add analysis-ready fields |
+| `validate.py` | Create validation checks |
+| `pipeline.py` | Coordinate the full process |
 
 ---
 
 ## Enrichment
 
-The pipeline adds fields that make the dataset easier to use in the API and dashboard.
+The pipeline adds fields that simplify dashboard filtering and API queries.
 
 Examples:
 
@@ -125,27 +108,22 @@ study_form_normalized
 sector_category
 ```
 
-These fields avoid repeating the same transformation logic in every API query or dashboard chart.
-
 ---
 
 ## Validation
 
-Validation checks are created before loading the dataset into PostgreSQL.
+Validation checks help confirm that the curated dataset is ready for PostgreSQL loading and API usage.
 
-The validation step helps confirm that the curated dataset has the expected structure and values before it is used by the API.
+Examples include:
 
-Examples of validation goals:
-
-```text
-required columns exist
-important fields are not empty
-values are normalized consistently
-text fields fit the planned database schema
-```
+| Validation Goal | Example |
+|---|---|
+| Required fields exist | Missing critical columns |
+| Consistent normalization | Decision values aligned |
+| Database compatibility | Text fields fit schema limits |
+| Data completeness | Important fields are not empty |
 
 ---
-
 
 ## API Refresh Process
 
@@ -155,25 +133,19 @@ The API exposes:
 POST /refresh
 ```
 
-This endpoint runs the reusable pipeline directly from the backend.
+This reruns the reusable pipeline directly from the backend.
 
-Refresh process:
+### Refresh Workflow
 
-```text
-Call build_curated_dataset()
-    ↓
-Create a fresh curated dataframe
-    ↓
-Create validation summary
-    ↓
-Truncate curated.yh_applications
-    ↓
-Insert the refreshed data into PostgreSQL
-    ↓
-Return status, row count, and validation count
-```
+| Step | Action |
+|---|---|
+| 1 | Run `build_curated_dataset()` |
+| 2 | Create validation summary |
+| 3 | Truncate `curated.yh_applications` |
+| 4 | Insert refreshed curated data |
+| 5 | Return status and validation results |
 
-The refresh endpoint is useful when the source data or pipeline logic has changed and the database needs to be updated without manually running the notebook.
+This allows the database to be refreshed without manually rerunning the notebook.
 
 
 

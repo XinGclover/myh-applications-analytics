@@ -2,145 +2,106 @@
 
 ## Purpose
 
-The Streamlit app is the frontend for the MYH applications analytics platform. It provides a multipage interface for project documentation, notebook preview, interactive analytics, and operational actions.
+The Streamlit app is the frontend for the MYH applications analytics platform.
 
-The app lives in:
+Main features:
+
+- interactive dashboard
+- filtering
+- KPI metrics
+- charts
+- notebook preview
+- CSV export
+- refresh operations
+
+The frontend lives in:
 
 ```text
 streamlit_app/
 ```
 
-## Current Structure
+---
+
+## Dashboard Preview
+
+![Dashboard](images/dashboard.png)
+
+---
+
+## Frontend Structure
 
 ```text
 streamlit_app/
 ├── app.py
 ├── pages/
-│   ├── 1_Notebook.py
-│   └── 2_Dashboard.py
 └── core/
-    ├── api_client.py
-    ├── config.py
-    ├── data_loader.py
-    ├── filters.py
-    └── metrics.py
 ```
 
-The exact page names may change as the app evolves, but the intended split is:
+---
 
-- `app.py` is the Streamlit entry point and landing page.
-- `pages/` contains user-facing pages.
-- `core/` contains reusable frontend logic.
+## Main Modules
 
-## Core Modules
+| Module | Responsibility |
+|---|---|
+| `app.py` | Streamlit entry point |
+| `pages/` | User-facing Streamlit pages |
+| `core/api_client.py` | HTTP communication with FastAPI |
+| `core/config.py` | Frontend constants and endpoint paths |
+| `core/data_loader.py` | Dashboard data loading helpers |
+| `core/filters.py` | Sidebar filter logic |
+| `core/metrics.py` | KPI calculations and formatting |
 
-### `core/api_client.py`
+---
 
-Handles HTTP communication with the FastAPI backend.
+## Dashboard Features
 
-Typical responsibilities:
+Current dashboard functionality includes:
 
-- read `API_BASE_URL`
-- call API endpoints with `requests`
-- return JSON, bytes, or dataframes
-- handle API errors gracefully in Streamlit
+- sidebar filters
+- KPI cards
+- yearly statistics
+- education area statistics
+- filtered application table
+- provider filtering
+- CSV export
+- refresh operations
 
-### `core/config.py`
+---
 
-Stores frontend constants such as:
+## Notebook Integration
 
-- endpoint paths
-- filter key lists
-- application row limits
+The notebook page displays an exported HTML version of the data preparation notebook.
 
-Keeping endpoint names here avoids scattering route strings across the UI.
-
-### `core/data_loader.py`
-
-Contains endpoint-specific loading functions.
-
-Examples:
-
-- load initial provider and application data
-- load filtered dashboard data
-- load provider applications
-- build export parameters
-
-### `core/filters.py`
-
-Contains sidebar filter logic.
-
-Current filters include:
-
-```text
-year
-region
-municipality
-decision
-provider
-study_form
-```
-
-Municipality options depend on the selected region.
-
-### `core/metrics.py`
-
-Contains KPI calculation and formatting logic.
-
-Dashboard KPIs include:
-
-- total applications
-- approved applications
-- approval rate
-- providers count
-
-## Page Responsibilities
-
-### Landing or README Page
-
-Explains the project as a data platform:
-
-- project purpose
-- architecture
-- pipeline
-- API
-- dashboard
-- tech stack
-
-### Notebook Page
-
-Displays an exported HTML notebook if available.
-
-In the current project, notebook HTML lives under:
+Notebook HTML files are stored in:
 
 ```text
 streamlit_app/notebooks/
 ```
 
-### Dashboard Page
+---
 
-Provides the main analytics interface:
+## Design Choices
 
-- sidebar filters
-- KPIs
-- charts
-- filtered application table
-- provider drilldown
+The frontend keeps:
 
-### Operations Page
+- UI logic inside Streamlit pages
+- reusable logic inside `core/`
+- API communication separated in `api_client.py`
 
-Provides operational actions:
+This avoids large monolithic dashboard files as the project grows.
 
-- refresh database
-- export CSV files
+---
 
-Operational actions should stay simple and should show clear success or error messages.
+## Local Development
 
-## Development Guidelines
+Run the frontend with:
 
-- Keep page files focused on Streamlit UI.
-- Put reusable API and transformation logic in `streamlit_app/core/`.
-- Keep endpoint constants in `core/config.py`.
-- Do not duplicate API route strings across pages.
-- Prefer small helper functions over large UI files.
-- Handle API errors in the frontend without crashing the app.
+```bash
+python -m streamlit run streamlit_app/app.py
+```
+
+For full setup instructions, see:
+
+```text
+docs/deployment.md
+```

@@ -1,33 +1,60 @@
-# Local Run Commands
+# Deployment
 
-This project runs locally with PostgreSQL, FastAPI, and Streamlit.
+## Cloud Deployment
 
-## Python Version
+The project is deployed using managed cloud services.
 
-This project requires **Python 3.12** or newer.
+### Deployment Overview
 
-Check your installed version:
+| Layer | Service |
+|---|---|
+| Frontend | Streamlit Community Cloud |
+| Backend API | Render |
+| Database | Neon PostgreSQL |
+
+Live application:
+
+```text
+🔗 https://myh-applications-analytics.streamlit.app/
+```
+
+The Streamlit frontend communicates with the FastAPI backend hosted on Render, which connects to PostgreSQL hosted on Neon.
+
+---
+
+## Local Setup
+
+### Python Version
+
+| Requirement | Version |
+|---|---|
+| Python | 3.12 or newer |
+
+Check installed version:
 
 ```bash
 python --version
 ```
 
-## 1. Create a Virtual Environment
+---
 
-```bash
-python -m venv .venv
-source .venv/bin/activate
-```
+## Local Run Commands
 
-## 2. Install Dependencies
+### Environment Setup
 
-```bash
-pip install -r requirements.txt
-```
+| Step | Command |
+|---|---|
+| Create virtual environment | `python -m venv .venv` |
+| Activate environment | `source .venv/bin/activate` |
+| Install dependencies | `pip install -r requirements.txt` |
 
-## 3. Configure Environment Variables
+---
 
-Create a `.env` file in the project root:
+## Environment Variables
+
+Create a `.env` file in the project root.
+
+### Example
 
 ```bash
 DB_NAME=myh_applications
@@ -39,49 +66,29 @@ DATABASE_URL=postgresql+psycopg2://postgres:your_password@localhost:5432/myh_app
 API_BASE_URL=http://localhost:8000
 ```
 
-`DATABASE_URL` is used by SQLAlchemy. `API_BASE_URL` is used by the Streamlit app.
+### Variable Usage
 
-## 4. Create Database, Tables, and Load Data
+| Variable | Purpose |
+|---|---|
+| `DATABASE_URL` | PostgreSQL connection for SQLAlchemy |
+| `API_BASE_URL` | FastAPI backend URL used by Streamlit |
 
-Make sure PostgreSQL is running, then run:
+---
 
-```bash
-python -m src.myh_db.bootstrap_db
-```
+## Database Loading
 
-This command:
+| Command | Purpose |
+|---|---|
+| `python -m src.myh_db.bootstrap_db` | Create database, tables, and load curated CSV |
+| `python -m src.myh_db.load_to_db` | Reload curated CSV into existing tables |
 
-- creates the PostgreSQL database if it does not exist
-- runs `part_3/sql/create_tables.sql`
-- loads `part_2/data/curated/curated_applications.csv`
+---
 
-## 5. Reload Only the Curated CSV
+## Notebook HTML Export
 
-If the database and tables already exist, reload only the curated applications data:
+The notebook is exported to HTML so it can be displayed inside Streamlit as a read-only report.
 
-```bash
-python -m src.myh_db.load_to_db
-```
-
-This truncates `curated.yh_applications` and loads the curated CSV again.
-
-## 6. Export Notebook to HTML
-
-The Streamlit notebook page displays the notebook as a static HTML document instead of rendering the `.ipynb` file directly.
-
-Reasons for converting the notebook to HTML:
-
-- Streamlit does not natively render Jupyter notebooks cleanly.
-- HTML export preserves:
-  - markdown formatting
-  - tables
-  - charts
-  - code cells
-  - outputs
-- The exported file loads faster and is easier to embed inside Streamlit.
-- Users can view the notebook as a read-only report without requiring Jupyter installed.
-
-Convert the notebook using:
+### Export Command
 
 ```bash
 python -m jupyter nbconvert \
@@ -90,24 +97,21 @@ python -m jupyter nbconvert \
   part_2/notebooks/part_2_curated_dataset.ipynb
 ```
 
-## 7. Run the FastAPI Backend
+---
 
-```bash
-python -m uvicorn part_3.api.main:app --reload
-```
+## Run Services
 
-API docs:
+| Service | Command |
+|---|---|
+| FastAPI backend | `python -m uvicorn part_3.api.main:app --reload` |
+| Streamlit frontend | `python -m streamlit run streamlit_app/app.py` |
+
+---
+
+## API Documentation
+
+FastAPI automatically provides Swagger UI documentation:
 
 ```text
 http://localhost:8000/docs
 ```
-
-## 8. Run the Streamlit App
-
-Open a second terminal, activate the virtual environment, then run:
-
-```bash
-source .venv/bin/activate
-python -m streamlit run streamlit_app/app.py
-```
-

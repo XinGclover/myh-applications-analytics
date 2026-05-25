@@ -12,49 +12,51 @@ part_3/sql/create_tables.sql
 
 The project uses:
 
+- PostgreSQL
 - SQLAlchemy engine connections
 - raw SQL queries
-- PostgreSQL
 
 ---
 
-## Schema
+## Database Structure
 
-The database uses the `curated` schema:
+Schema:
 
 ```sql
 CREATE SCHEMA IF NOT EXISTS curated;
 ```
 
-Main tables:
+### Main Tables
 
-```text
-curated.yh_applications
-curated.application_notes
-```
+| Table | Purpose |
+|---|---|
+| `curated.yh_applications` | Store harmonized MYH application records |
+| `curated.application_notes` | Store user notes linked to applications |
 
 ---
 
 ## `curated.yh_applications`
 
-This is the main curated dataset table.
+Main curated dataset table.
 
 Each row represents one harmonized YH application record from the MYH Excel files.
 
-The table supports:
+### Main Usage
 
-- filtering
-- statistics
-- exports
-- dashboard visualizations
+| Usage | Description |
+|---|---|
+| Filtering | Dashboard and API filters |
+| Statistics | Aggregated charts and KPIs |
+| Export | CSV export endpoints |
+| Visualization | Streamlit dashboard tables and charts |
 
 ---
 
 ## `curated.application_notes`
 
-This table stores user notes connected to applications.
+Stores user-created notes connected to applications.
 
-The notes table is separated from the curated dataset so annotations do not modify the original harmonized data.
+The notes table is separated from the curated dataset so annotations do not modify the original harmonized source data.
 
 ---
 
@@ -67,21 +69,12 @@ src/myh_db/bootstrap_db.py
 src/myh_db/load_to_db.py
 ```
 
-### First-time setup
+### Loading Commands
 
-Creates the database, creates tables, and loads the curated CSV:
-
-```bash
-python -m src.myh_db.bootstrap_db
-```
-
-### Reload curated data only
-
-Loads the curated CSV into existing tables:
-
-```bash
-python -m src.myh_db.load_to_db
-```
+| Command | Purpose |
+|---|---|
+| `python -m src.myh_db.bootstrap_db` | Create database, tables, and load curated CSV |
+| `python -m src.myh_db.load_to_db` | Reload curated CSV into existing tables |
 
 ---
 

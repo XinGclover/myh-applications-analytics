@@ -2,174 +2,57 @@
 
 ## Purpose
 
-The FastAPI backend exposes the curated MYH applications dataset to dashboard users and other consumers. It provides record browsing, filtering, provider drilldowns, aggregated statistics, CSV exports, notes, and an operational refresh endpoint.
+The FastAPI backend exposes the curated MYH applications dataset to the Streamlit dashboard.
 
-The API code lives in `part_3/api/`.
+Main features:
 
-## Structure
+- application browsing
+- filtering
+- statistics
+- CSV export
+- notes
+- refresh operations
 
-```text
-part_3/api/
-├── main.py
-├── routers/
-├── services/
-├── schemas/
-└── utils/
-```
+---
 
-Responsibilities:
+## Swagger UI
 
-- `main.py` creates the FastAPI app and includes routers.
-- `routers/` defines HTTP endpoints and request parameters.
-- `services/` contains database query logic and business logic.
-- `schemas/` contains Pydantic models for validation and response shape.
-- `utils/response.py` contains shared response helpers.
+FastAPI automatically generates interactive API documentation through Swagger UI.
 
-## Design Choices
+![Swagger UI](images/swagger_ui.png)
 
-The API intentionally uses SQLAlchemy engine connections and raw SQL instead of ORM models.
+---
 
-This keeps query behavior explicit and makes the project easier to inspect while learning and debugging:
+## Main Endpoints
 
-- SQL is visible in service functions.
-- Filters are built directly from API query parameters.
-- Aggregation queries are easy to compare with database output.
-- Pydantic models still define the API contract.
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/applications` | Return filtered application records |
+| GET | `/applications/{diarienummer}` | Return a single application |
+| POST | `/applications/{diarienummer}/notes` | Create an application note |
+| GET | `/applications/{diarienummer}/notes` | Return application notes |
+| PUT | `/applications/{diarienummer}/notes/{note_id}` | Update an application note |
+| DELETE | `/applications/{diarienummer}/notes/{note_id}` | Delete an application note |
+| GET | `/stats/by-year` | Return yearly application statistics |
+| GET | `/stats/by-education-area` | Return statistics grouped by education area |
+| GET | `/export/applications` | Export application data as CSV |
+| GET | `/export/stats/by-year` | Export yearly statistics as CSV |
+| POST | `/refresh` | Rebuild and reload the curated dataset |
+| GET | `/providers` | Return provider list |
+| GET | `/providers/{provider_name}/applications` | Return provider applications |
 
-## Main Endpoint Groups
+---
 
-### Applications
+## Local Development
 
-Defined in `part_3/api/routers/application_router.py`.
-
-Examples:
-
-```text
-GET /applications
-GET /applications/{diarienummer}
-```
-
-Supported `/applications` filters include:
-
-```text
-year
-decision
-region
-municipality
-provider
-study_form
-limit
-```
-
-Example:
+Run the API with:
 
 ```bash
-curl "http://localhost:8000/applications?year=2025&decision=approved&limit=20"
-```
-
-### Providers
-
-Defined in `part_3/api/routers/provider_router.py`.
-
-Examples:
-
-```text
-GET /providers
-GET /providers/{provider_name}/applications
-```
-
-Example:
-
-```bash
-curl "http://localhost:8000/providers"
-```
-
-### Statistics
-
-Defined in `part_3/api/routers/stats_router.py`.
-
-Examples:
-
-```text
-GET /stats/by-year
-GET /stats/by-education-area
-```
-
-The current Streamlit frontend uses these endpoints for dashboard charts.
-
-Example:
-
-```bash
-curl "http://localhost:8000/stats/by-year"
-```
-
-### Exports
-
-Defined in `part_3/api/routers/export_router.py`.
-
-Examples:
-
-```text
-GET /export/applications
-GET /export/stats/by-year
-```
-
-Example:
-
-```bash
-curl -o applications.csv "http://localhost:8000/export/applications"
-```
-
-### Refresh
-
-Defined in `part_3/api/routers/refresh_router.py`.
-
-```text
-POST /refresh
-```
-
-This endpoint runs the pipeline, validates the result, truncates the current curated table, and reloads the refreshed dataset.
-
-Example:
-
-```bash
-curl -X POST "http://localhost:8000/refresh"
-```
-
-Expected response fields:
-
-```json
-{
-  "status": "success",
-  "rows_inserted": 1234,
-  "validation_checks": 5
-}
-```
-
-## Running the API Locally
-
-From the project root:
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
 python -m uvicorn part_3.api.main:app --reload
 ```
 
-Open the interactive docs:
+For full setup instructions, see:
 
 ```text
-http://localhost:8000/docs
+docs/deployment.md
 ```
-
-## Error Handling
-
-Routers raise `HTTPException` for missing records or failed operations. The Streamlit API client catches HTTP and network errors and shows user-friendly error messages in the frontend.
-
-## API Contract Notes
-
-- Response models are defined with Pydantic in `part_3/api/schemas/response_schema.py`.
-- Service functions return plain dictionaries or lists of dictionaries.
-- Pandas dataframes are converted to JSON-compatible records before returning.
-- Endpoint names should remain stable because the Streamlit frontend depends on them through constants in `streamlit_app/core/config.py`.
