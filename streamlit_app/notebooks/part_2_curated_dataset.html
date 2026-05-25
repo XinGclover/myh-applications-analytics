@@ -7517,7 +7517,19 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="Part-2-%E2%80%93-Curated-Dataset">Part 2 – Curated Dataset<a class="anchor-link" href="#Part-2-%E2%80%93-Curated-Dataset">¶</a></h1>
+<h1 id="Part-2-%E2%80%93-Curated-Dataset">Part 2 – Curated Dataset<a class="anchor-link" href="#Part-2-%E2%80%93-Curated-Dataset">¶</a></h1><h2 id="Introduction">Introduction<a class="anchor-link" href="#Introduction">¶</a></h2><p>This project builds a curated dataset from historical application result data published by the Swedish National Agency for Higher Vocational Education (MYH).</p>
+<p>The source data is spread across yearly Excel files. The files describe the same business process, but their sheets, header rows, column names, and available fields vary between years. Because of that, the data needs to be treated as a small data engineering project rather than a simple one-file pandas exercise.</p>
+<p>The goal is to create a reusable curated dataset that can support downstream SQL storage, FastAPI endpoints, and dashboard analysis.</p>
+<p>The work includes:</p>
+<ul>
+<li>schema inspection across years</li>
+<li>harmonization of columns and values</li>
+<li>data cleaning and text normalization</li>
+<li>enrichment of analytical fields</li>
+<li>validation and quality checks</li>
+<li>export to a curated dataset for SQL and API integration</li>
+</ul>
+<p>The curated dataset is primarily based on Tabell 3. This table gives the most consistent application-level view, where each row represents one application record. That grain is suitable for a central applications table in PostgreSQL and for API filtering.</p>
 </div>
 </div>
 </div>
@@ -7601,14 +7613,15 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Step-1:-Load-and-Combine-Raw-Excel-Files">Step 1: Load and Combine Raw Excel Files<a class="anchor-link" href="#Step-1:-Load-and-Combine-Raw-Excel-Files">¶</a></h2><p>The raw data is stored as separate Excel files for different years (2022–2025).</p>
-<p>In this step, I load all Excel files from the raw data directory, add a year column based on the filename, and combine them into a single dataframe for further cleaning and harmonization.</p>
-<p>Combining the datasets into one dataframe makes it easier to:</p>
+<h2 id="Step-1:-Load-and-Combine-Raw-Excel-Files">Step 1: Load and Combine Raw Excel Files<a class="anchor-link" href="#Step-1:-Load-and-Combine-Raw-Excel-Files">¶</a></h2><p>The project uses MYH application result files from 2022–2025.</p>
+<p>These years were selected because they provide useful historical coverage while keeping the schema harmonization manageable. Earlier years can contain larger structural differences, but 2022–2025 still show changes over time and are enough to build a realistic multi-year dataset.</p>
+<p>In this step, the raw Excel files are loaded from the raw data directory. A source year is added from the filename so each record can be traced back to its original file.</p>
+<p>Combining the yearly datasets makes it easier to:</p>
 <ul>
 <li>inspect structural differences between years</li>
-<li>identify inconsistencies</li>
-<li>harmonize column names and data types</li>
-<li>perform unified cleaning and transformation</li>
+<li>identify inconsistent column names and values</li>
+<li>define harmonization rules</li>
+<li>prepare the data for one reusable curated table</li>
 </ul>
 </div>
 </div>
@@ -7653,15 +7666,16 @@ Loading file: resultat-ansokningsomgang-2025.xlsx
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Step-2:-Comparing-Table-Structures-Across-Years">Step 2: Comparing Table Structures Across Years<a class="anchor-link" href="#Step-2:-Comparing-Table-Structures-Across-Years">¶</a></h2><p>To prepare for harmonization, I inspected the structure of Tabell 3 across all years.</p>
+<h2 id="Step-2:-Comparing-Table-Structures-Across-Years">Step 2: Comparing Table Structures Across Years<a class="anchor-link" href="#Step-2:-Comparing-Table-Structures-Across-Years">¶</a></h2><p>The harmonization work focuses on Tabell 3 because it represents applications at a consistent business level.</p>
+<p>Other sheets, such as Tabell 4, contain more detailed municipality-level relationships where the same application may appear more than once. Mixing those rows directly into the main table would change the grain and could create duplicate application records.</p>
 <p>The inspection included:</p>
 <ul>
 <li>dataset dimensions</li>
 <li>column names</li>
+<li>header row differences</li>
 <li>structural differences between years</li>
 </ul>
-<p>The comparison revealed that the 2022 dataset contains fewer columns than the datasets from 2023–2025.</p>
-<p>This indicates that schema harmonization is required before the datasets can be combined into a unified curated dataset.</p>
+<p>The comparison showed that the 2022 dataset contains fewer columns than the datasets from 2023–2025. This confirms that schema harmonization is needed before the data can become one curated dataset.</p>
 </div>
 </div>
 </div>
@@ -7750,15 +7764,15 @@ Loading file: resultat-ansokningsomgang-2025.xlsx
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="Schema-Comparison-Summary">Schema Comparison Summary<a class="anchor-link" href="#Schema-Comparison-Summary">¶</a></h3><p>The historical Excel files shared several core business concepts, but their structures were not fully consistent across years.</p>
+<h3 id="Schema-Comparison-Summary">Schema Comparison Summary<a class="anchor-link" href="#Schema-Comparison-Summary">¶</a></h3><p>The historical Excel files share several core business concepts, but the structures are not fully consistent across years.</p>
 <p>The main differences were:</p>
 <ul>
 <li>different header row positions across years</li>
-<li>slightly different column names</li>
+<li>slightly different column names for the same concept</li>
 <li>inconsistent naming conventions</li>
 <li>some variation in available columns</li>
 </ul>
-<p>Because of this, I created a harmonized target schema and mapped the source columns into a consistent structure.</p>
+<p>Because of this, a harmonized target schema was created and the source columns were mapped into that structure. This makes the later SQL table and API responses predictable.</p>
 </div>
 </div>
 </div>
@@ -7798,8 +7812,8 @@ Loading file: resultat-ansokningsomgang-2025.xlsx
 </tr>
 </tbody>
 </table>
-<p>The harmonization was based on semantic meaning rather than exact text matching.</p>
-<p>In addition, normalized English analytical columns such as <code>decision_normalized</code> and <code>study_form_normalized</code> were added to support downstream API filtering and analytics use cases while preserving the original Swedish source terminology.</p>
+<p>The mapping is based on meaning rather than exact text matching. This is important because the same field may be written differently from year to year.</p>
+<p>The curated table keeps the original Swedish values, such as <code>beslut</code> and <code>studieform</code>, because they preserve source context and are useful when checking the data against the original files. It also adds normalized fields such as <code>decision_normalized</code> and <code>study_form_normalized</code> so SQL queries, API filters, and dashboard logic can use stable values.</p>
 </div>
 </div>
 </div>
@@ -7958,7 +7972,7 @@ Loading file: resultat-ansokningsomgang-2025.xlsx
 <li>replacing spaces and special characters with underscores</li>
 <li>removing parentheses and percentage symbols where needed</li>
 </ul>
-<p>This made it easier to compare columns across years and apply a consistent column mapping.</p>
+<p>Text normalization helps because SQL queries, API parameters, and Python transformations work better with predictable field names. It also reduces the risk of small formatting differences causing mapping or validation errors later in the pipeline.</p>
 </div>
 </div>
 </div>
@@ -8050,7 +8064,7 @@ Loading file: resultat-ansokningsomgang-2025.xlsx
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Step-5:-Schema-Harmonization">Step 5: Schema Harmonization<a class="anchor-link" href="#Step-5:-Schema-Harmonization">¶</a></h2><p>After standardizing the column names, the datasets still contained structural differences between years. In particular, the 2022 dataset included fewer columns than the datasets from 2023–2025.</p>
+<h2 id="Step-5:-Schema-Harmonization">Step 5: Schema Harmonization<a class="anchor-link" href="#Step-5:-Schema-Harmonization">¶</a></h2><p>After standardizing column names, the datasets still contained structural differences between years. In particular, the 2022 dataset included fewer columns than the datasets from 2023–2025.</p>
 <p>To create a unified curated dataset, the schemas were harmonized into a common target structure.</p>
 <p>The harmonization process included:</p>
 <ul>
@@ -8060,7 +8074,7 @@ Loading file: resultat-ansokningsomgang-2025.xlsx
 <li>ensuring a consistent column order across all years</li>
 <li>adding source metadata columns for traceability</li>
 </ul>
-<p>This step ensures that all yearly datasets can be safely combined into a single curated dataset.</p>
+<p>This step makes it possible to safely combine yearly data into one application-level table. The source metadata keeps the pipeline auditable because each row can still be connected back to its source year, file, and sheet.</p>
 </div>
 </div>
 </div>
@@ -8150,11 +8164,10 @@ Loading file: resultat-ansokningsomgang-2025.xlsx
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Step-6:-Build-the-Curated-Dataset">Step 6: Build the Curated Dataset<a class="anchor-link" href="#Step-6:-Build-the-Curated-Dataset">¶</a></h2><p>After harmonizing and cleaning the yearly datasets, the dataframes were combined into one unified curated dataset.</p>
-<p>At this stage, all datasets shared the same column structure, naming conventions, and normalized values, which made it possible to safely merge them into a single analysis-ready table.</p>
-<p>Additional enrichment was also applied to improve the usability of the dataset for later analysis and API development. Examples of enrichment included approval indicators, sector categorization, and standardized education-related attributes.</p>
-<p>The final curated dataset represents harmonized application-related information across multiple years in a consistent and structured format.</p>
-<p>This dataset will later be used for validation, SQL database integration, and API development.</p>
+<h2 id="Step-6:-Build-the-Curated-Dataset">Step 6: Build the Curated Dataset<a class="anchor-link" href="#Step-6:-Build-the-Curated-Dataset">¶</a></h2><p>After harmonizing and cleaning the yearly datasets, the dataframes were combined into one unified curated dataset. The curated dataset was designed to function as the central source table for the SQL database and FastAPI service developed in Part 3.</p>
+<p>At this stage, all datasets shared the same column structure, naming conventions, and normalized values. This made it possible to merge them into a single analysis-ready table without changing the application-level grain.</p>
+<p>Additional enrichment was applied to improve the usability of the dataset for later analysis and API development. Examples include approval indicators, education length categories, sector categorization, and source-related metadata.</p>
+<p>The final curated dataset represents harmonized application information across multiple years in a consistent and structured format. It can be validated, loaded into PostgreSQL, and served through the API.</p>
 </div>
 </div>
 </div>
@@ -8373,17 +8386,18 @@ Columns: 24
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Step-7:-Validation-and-Quality-Checks">Step 7: Validation and Quality Checks<a class="anchor-link" href="#Step-7:-Validation-and-Quality-Checks">¶</a></h2><p>After harmonization and merging, several validation and quality checks were performed to inspect the consistency and completeness of the curated dataset.</p>
-<p>The validation focused on:</p>
+<h2 id="Step-7:-Validation-and-Quality-Checks">Step 7: Validation and Quality Checks<a class="anchor-link" href="#Step-7:-Validation-and-Quality-Checks">¶</a></h2><p>After harmonization and merging, validation and quality checks were performed to inspect the consistency and completeness of the curated dataset.</p>
+<p>Validation was done through both exploratory inspection and structured checks. This combination is useful because visual inspection helps understand the data, while reusable checks make the pipeline easier to rerun later.</p>
+<p>The checks included:</p>
 <ul>
-<li>dataset structure and data types</li>
-<li>missing values</li>
-<li>duplicate application records</li>
-<li>categorical consistency</li>
-<li>normalized analytical fields</li>
+<li>duplicate detection</li>
+<li>categorical consistency validation</li>
+<li>missing value inspection</li>
+<li>schema completeness checks</li>
+<li>PostgreSQL field length validation</li>
+<li>validation of normalized analytical columns</li>
 </ul>
-<p>Some missing values were expected due to historical schema differences between years.</p>
-<p>For example, several SUN5-related classification fields were not available in the 2022 source files and therefore appear as missing values after harmonization.</p>
+<p>Some missing values were expected because the yearly files do not contain exactly the same fields. For example, several SUN5-related classification fields were not available in the 2022 source files and therefore appear as missing values after harmonization.</p>
 </div>
 </div>
 </div>
@@ -8442,34 +8456,34 @@ Columns: 24
 &lt;class 'pandas.DataFrame'&gt;
 RangeIndex: 4921 entries, 0 to 4920
 Data columns (total 24 columns):
- #   Column                 Non-Null Count  Dtype  
----  ------                 --------------  -----  
- 0   source_year            4921 non-null   Int64  
- 1   source_file            4921 non-null   string 
- 2   source_sheet           4921 non-null   string 
- 3   diarienummer           4921 non-null   string 
- 4   utbildningsnamn        4921 non-null   string 
- 5   utbildningsomrade      4921 non-null   string 
- 6   beslut                 4921 non-null   string 
- 7   decision_normalized    4921 non-null   string 
- 8   kommun                 4921 non-null   string 
- 9   lan                    4921 non-null   string 
- 10  yh_poang               4921 non-null   Int64  
- 11  studieform             4921 non-null   string 
- 12  study_form_normalized  4921 non-null   string 
- 13  studietakt_procent     4921 non-null   Int64  
- 14  utbildningsanordnare   4921 non-null   string 
- 15  huvudmannatyp          4921 non-null   string 
- 16  sun5_inriktning        3714 non-null   string 
- 17  sun5_inriktning_namn   3714 non-null   string 
- 18  seqf_niva              3661 non-null   Float64
- 19  smalt_yrkesomrade      3714 non-null   string 
- 20  is_approved            4921 non-null   boolean
- 21  education_length       4921 non-null   str    
- 22  sector_category        4921 non-null   str    
- 23  record_source          4921 non-null   str    
-dtypes: Float64(1), Int64(3), boolean(1), str(3), string(16)
-memory usage: 913.2 KB
+ #   Column                 Non-Null Count  Dtype        
+---  ------                 --------------  -----        
+ 0   source_year            4921 non-null   Int64        
+ 1   source_file            4921 non-null   string       
+ 2   source_sheet           4921 non-null   string       
+ 3   diarienummer           4921 non-null   string       
+ 4   utbildningsnamn        4921 non-null   string       
+ 5   utbildningsomrade      4921 non-null   string       
+ 6   beslut                 4921 non-null   string       
+ 7   decision_normalized    4921 non-null   string       
+ 8   kommun                 4921 non-null   string       
+ 9   lan                    4921 non-null   string       
+ 10  yh_poang               4921 non-null   Int64        
+ 11  studieform             4921 non-null   string       
+ 12  study_form_normalized  4921 non-null   string       
+ 13  studietakt_procent     4921 non-null   Int64        
+ 14  utbildningsanordnare   4921 non-null   string       
+ 15  huvudmannatyp          4921 non-null   string       
+ 16  sun5_inriktning        3714 non-null   string       
+ 17  sun5_inriktning_namn   3714 non-null   string       
+ 18  seqf_niva              3661 non-null   Float64      
+ 19  smalt_yrkesomrade      3714 non-null   string       
+ 20  is_approved            4921 non-null   bool[pyarrow]
+ 21  education_length       4921 non-null   str          
+ 22  sector_category        4921 non-null   str          
+ 23  record_source          4921 non-null   str          
+dtypes: Float64(1), Int64(3), bool[pyarrow](1), str(3), string(16)
+memory usage: 2.1 MB
 
 --------- MISSING VALUES ---------
 </pre>
@@ -9050,8 +9064,8 @@ dtype: int64</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Formal-Validation-Summary">Formal Validation Summary<a class="anchor-link" href="#Formal-Validation-Summary">¶</a></h2><p>In addition to exploratory inspection, a structured validation summary was created to identify potential data quality issues in a more standardized and reusable way.</p>
-<h2 id="Validate-text-field-lengths-against-planned-PostgreSQL-schema-constraints.">Validate text field lengths against planned PostgreSQL schema constraints.<a class="anchor-link" href="#Validate-text-field-lengths-against-planned-PostgreSQL-schema-constraints.">¶</a></h2>
+<h2 id="Formal-Validation-Summary">Formal Validation Summary<a class="anchor-link" href="#Formal-Validation-Summary">¶</a></h2><p>In addition to exploratory inspection, a structured validation summary was created to identify potential data quality issues in a standardized and reusable way.</p>
+<p>The checks also include text length validation against the planned PostgreSQL schema constraints. This helps catch values that could fail during database loading or cause inconsistent API responses later.</p>
 </div>
 </div>
 </div>
@@ -9181,8 +9195,8 @@ dtype: int64</pre>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h2 id="Step-8:-Export-Curated-Dataset">Step 8: Export Curated Dataset<a class="anchor-link" href="#Step-8:-Export-Curated-Dataset">¶</a></h2><p>After validation and quality checks, the curated dataset was exported for further use.</p>
-<p>The exported file represents the cleaned, harmonized, and combined dataset. It can later be loaded into a database and used as the data source for an API.</p>
-<p>The dataset was exported as a CSV file to make it easy to inspect and reuse in the next part of the assignment.</p>
+<p>The exported CSV represents the cleaned, harmonized, enriched, and combined dataset. It is the handoff point between the pandas pipeline and the later SQL/FastAPI part of the project.</p>
+<p>Exporting the curated data makes the transformation reproducible: the same source files and pipeline rules can be rerun to produce a fresh dataset when the raw files change or when new years are added.</p>
 </div>
 </div>
 </div>
@@ -9215,9 +9229,10 @@ dtype: int64</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Reflection">Reflection<a class="anchor-link" href="#Reflection">¶</a></h2><p>Working with historical Excel files highlighted several common data engineering challenges, including inconsistent schemas, missing columns, and differences in formatting between years.</p>
-<p>Defining a target schema before merging the datasets made the harmonization process more structured and easier to manage.</p>
-<p>This assignment also demonstrated the importance of cleaning and validating data before loading it into a database or exposing it through an API.</p>
+<h2 id="Reflection">Reflection<a class="anchor-link" href="#Reflection">¶</a></h2><p>One of the main challenges in this project was balancing historical consistency with practical usability. The yearly MYH files describe similar business concepts, but the structures and naming conventions differ enough that explicit harmonization rules are needed.</p>
+<p>A key design choice was to keep the curated table at application-level grain. This makes the dataset easier to load into PostgreSQL, expose through FastAPI, and analyze in a dashboard without accidentally duplicating applications.</p>
+<p>Another useful pattern was keeping both original Swedish source values and normalized analytical fields. The original values support traceability and review, while the normalized fields make filtering, aggregation, and API usage more reliable.</p>
+<p>Overall, the result is more than a cleaned CSV. It is a reproducible transformation pipeline that creates a reusable curated dataset for downstream database, API, and analytics work.</p>
 </div>
 </div>
 </div>
