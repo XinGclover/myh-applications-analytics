@@ -100,18 +100,31 @@ def get_file(endpoint: str, params: dict | None = None) -> tuple[bytes | None, s
     return response.content, None
 
 
+def load_dataframe_with_error(
+    endpoint: str,
+    params: dict | None = None,
+) -> tuple[pd.DataFrame, str | None]:
+    """
+    Load an API response into a dataframe
+    without rendering Streamlit error messages.
+    """
+    data, error = get_json(endpoint, params=params)
+
+    if error or not data:
+        return pd.DataFrame(), error
+
+    return pd.DataFrame(data), None
+
+
 def load_dataframe(endpoint: str, params: dict | None = None) -> pd.DataFrame:
     """
     Load list-style API responses into a dataframe
     and show API errors inside Streamlit.
     """
-    data, error = get_json(endpoint, params=params)
+    df, error = load_dataframe_with_error(endpoint, params=params)
 
     if error:
         st.error(error)
-        return pd.DataFrame()
+        return df
 
-    if not data:
-        return pd.DataFrame()
-
-    return pd.DataFrame(data)
+    return df

@@ -20,7 +20,9 @@ from core.metrics import calculate_kpis, format_rate
 st.title("MYH Applications Dashboard")
 st.caption(f"API: {get_api_base_url()}")
 
-initial_data = load_initial_data()
+with st.spinner("Loading dashboard filters..."):
+    initial_data = load_initial_data()
+
 year_df = initial_data["year_stats"]
 providers_df = initial_data["providers"]
 all_applications_df = initial_data["all_applications"]
@@ -28,8 +30,11 @@ all_applications_df = initial_data["all_applications"]
 filter_options = get_filter_options(year_df, all_applications_df, providers_df)
 selected_filters = render_sidebar_filters(filter_options, all_applications_df)
 
-filtered_data = load_filtered_data(selected_filters)
+with st.spinner("Loading dashboard data..."):
+    filtered_data = load_filtered_data(selected_filters)
+
 year_df = filtered_data["year_stats"]
+year_stats_error = filtered_data["year_stats_error"]
 education_area_df = filtered_data["education_area_stats"]
 applications_df = filtered_data["applications"]
 
@@ -50,7 +55,9 @@ chart_cols = st.columns(2)
 
 with chart_cols[0]:
     st.subheader("Applications by year")
-    if year_df.empty:
+    if year_stats_error:
+        st.warning("Yearly statistics are temporarily unavailable. Please refresh the page.")
+    elif year_df.empty:
         st.info("No yearly statistics available.")
     else:
         chart_df = year_df.set_index("source_year")["total_applications"]
