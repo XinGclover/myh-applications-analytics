@@ -41,6 +41,5 @@ def get_provider_applications(provider_name: str) -> list[dict]:
     params = {"provider_name": f"%{provider_name}%"}
 
     df = pd.read_sql(query, engine, params=params)
-    print(df.isna().sum()[df.isna().sum() > 0])
 
     return dataframe_to_records(df)

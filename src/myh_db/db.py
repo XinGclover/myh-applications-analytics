@@ -13,5 +13,9 @@ DB_PORT = os.getenv("DB_PORT", "5432")
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-engine = create_engine(DATABASE_URL)
+if not DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL is not configured. Set it in .env before using the database."
+    )
 
+engine = create_engine(DATABASE_URL)

@@ -1,6 +1,16 @@
 # Local Run Commands
 
-This project runs locally with PostgreSQL, FastAPI, and Streamlit. It does not use `uv`; use normal `python -m ...` commands.
+This project runs locally with PostgreSQL, FastAPI, and Streamlit.
+
+## Python Version
+
+This project requires **Python 3.12** or newer.
+
+Check your installed version:
+
+```bash
+python --version
+```
 
 ## 1. Create a Virtual Environment
 
@@ -12,7 +22,7 @@ source .venv/bin/activate
 ## 2. Install Dependencies
 
 ```bash
-python -m pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 ## 3. Configure Environment Variables

@@ -1,29 +1,16 @@
 from urllib.parse import quote
 
-try:
-    from core.api_client import load_dataframe
-    from core.config import (
-        APPLICATION_FILTER_KEYS,
-        APPLICATIONS_ENDPOINT,
-        PROVIDERS_ENDPOINT,
-        STATS_BY_EDUCATION_AREA_FILTER_KEYS,
-        STATS_BY_EDUCATION_AREA_ENDPOINT,
-        STATS_BY_YEAR_FILTER_KEYS,
-        STATS_BY_YEAR_ENDPOINT,
-    )
-    from core.filters import build_query_params
-except ImportError:
-    from core.api_client import load_dataframe
-    from core.config import (
-        APPLICATION_FILTER_KEYS,
-        APPLICATIONS_ENDPOINT,
-        PROVIDERS_ENDPOINT,
-        STATS_BY_EDUCATION_AREA_FILTER_KEYS,
-        STATS_BY_EDUCATION_AREA_ENDPOINT,
-        STATS_BY_YEAR_FILTER_KEYS,
-        STATS_BY_YEAR_ENDPOINT,
-    )
-    from core.filters import build_query_params
+from core.api_client import load_dataframe
+from core.config import (
+    APPLICATION_FILTER_KEYS,
+    APPLICATIONS_ENDPOINT,
+    PROVIDERS_ENDPOINT,
+    STATS_BY_EDUCATION_AREA_FILTER_KEYS,
+    STATS_BY_EDUCATION_AREA_ENDPOINT,
+    STATS_BY_YEAR_FILTER_KEYS,
+    STATS_BY_YEAR_ENDPOINT,
+)
+from core.filters import build_query_params
 
 
 def load_initial_data():

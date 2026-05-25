@@ -93,7 +93,6 @@ st.code(
 /applications
 /providers
 /stats/by-year
-/stats/by-region
 /export/applications
 /refresh
 """.strip(),
@@ -134,4 +133,3 @@ st.markdown(
     - Expand observability around refresh runs and validation results
     """
 )
-

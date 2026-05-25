@@ -2,10 +2,7 @@ from __future__ import annotations
 
 import streamlit as st
 
-try:
-    from core.config import APPLICATION_LIMIT
-except ImportError:
-    from core.config import APPLICATION_LIMIT
+from core.config import APPLICATION_LIMIT
 
 
 def select_filter(label: str, options: list, key: str) -> str | int | None:

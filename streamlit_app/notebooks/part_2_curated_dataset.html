@@ -8386,18 +8386,18 @@ Columns: 24
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Step-7:-Validation-and-Quality-Checks">Step 7: Validation and Quality Checks<a class="anchor-link" href="#Step-7:-Validation-and-Quality-Checks">¶</a></h2><p>After harmonization and merging, validation and quality checks were performed to inspect the consistency and completeness of the curated dataset.</p>
-<p>Validation was done through both exploratory inspection and structured checks. This combination is useful because visual inspection helps understand the data, while reusable checks make the pipeline easier to rerun later.</p>
-<p>The checks included:</p>
+<h2 id="Step-7:-Validation-and-Quality-Checks">Step 7: Validation and Quality Checks<a class="anchor-link" href="#Step-7:-Validation-and-Quality-Checks">¶</a></h2><p>The curated dataset was validated through both exploratory inspection and structured quality checks.</p>
+<p>The validation process focused on:</p>
 <ul>
+<li>dataset completeness</li>
+<li>missing values</li>
 <li>duplicate detection</li>
-<li>categorical consistency validation</li>
-<li>missing value inspection</li>
-<li>schema completeness checks</li>
-<li>PostgreSQL field length validation</li>
-<li>validation of normalized analytical columns</li>
+<li>application-level uniqueness</li>
+<li>required schema coverage</li>
+<li>categorical consistency in normalized fields</li>
 </ul>
-<p>Some missing values were expected because the yearly files do not contain exactly the same fields. For example, several SUN5-related classification fields were not available in the 2022 source files and therefore appear as missing values after harmonization.</p>
+<p>The duplicate application check uses the combination of source_year and diarienummer because this represents the practical business key for the curated applications dataset.</p>
+<p>The required column check confirms that the curated dataset contains the core fields expected for the main applications table. Duplicate checks are performed at the application level using source year and diarienummer, because this combination represents the practical business key in the curated dataset.</p>
 </div>
 </div>
 </div>
@@ -8418,6 +8418,40 @@ Columns: 24
 <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">--------- DUPLICATE ROWS ---------"</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">curated_df</span><span class="o">.</span><span class="n">duplicated</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
 
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">--------- DUPLICATE APPLICATION CHECK ---------"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">curated_df</span><span class="o">.</span><span class="n">duplicated</span><span class="p">(</span>
+        <span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s2">"source_year"</span><span class="p">,</span> <span class="s2">"diarienummer"</span><span class="p">]</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">--------- REQUIRED COLUMN CHECK ---------"</span><span class="p">)</span>
+
+<span class="n">required_columns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"source_year"</span><span class="p">,</span>
+    <span class="s2">"source_file"</span><span class="p">,</span>
+    <span class="s2">"source_sheet"</span><span class="p">,</span>
+    <span class="s2">"diarienummer"</span><span class="p">,</span>
+    <span class="s2">"utbildningsnamn"</span><span class="p">,</span>
+    <span class="s2">"utbildningsomrade"</span><span class="p">,</span>
+    <span class="s2">"beslut"</span><span class="p">,</span>
+    <span class="s2">"decision_normalized"</span><span class="p">,</span>
+    <span class="s2">"kommun"</span><span class="p">,</span>
+    <span class="s2">"lan"</span><span class="p">,</span>
+    <span class="s2">"yh_poang"</span><span class="p">,</span>
+    <span class="s2">"studieform"</span><span class="p">,</span>
+    <span class="s2">"studietakt_procent"</span><span class="p">,</span>
+    <span class="s2">"utbildningsanordnare"</span><span class="p">,</span>
+    <span class="s2">"huvudmannatyp"</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">missing_required_columns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">required_columns</span>
+    <span class="k">if</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">curated_df</span><span class="o">.</span><span class="n">columns</span>
+<span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">missing_required_columns</span><span class="p">)</span>
+
 <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">--------- LOW-CARDINALITY COLUMN INSPECTION ---------"</span><span class="p">)</span>
 
 <span class="n">inspect_columns</span> <span class="o">=</span> <span class="p">[</span>
@@ -8429,13 +8463,15 @@ Columns: 24
     <span class="s2">"huvudmannatyp"</span><span class="p">,</span>
     <span class="s2">"seqf_niva"</span><span class="p">,</span>
     <span class="s2">"sector_category"</span><span class="p">,</span>
-    <span class="s2">"smalt_yrkesomrade"</span>   
+    <span class="s2">"smalt_yrkesomrade"</span>
 <span class="p">]</span>
 
 <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">inspect_columns</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">--- </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2"> ---"</span><span class="p">)</span>
 
-    <span class="n">value_counts_df</span> <span class="o">=</span> <span class="n">curated_df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">(</span><span class="n">dropna</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+    <span class="n">value_counts_df</span> <span class="o">=</span> <span class="n">curated_df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">(</span>
+        <span class="n">dropna</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
 
     <span class="n">value_counts_df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span><span class="p">,</span> <span class="s2">"count"</span><span class="p">]</span>
 
@@ -8525,6 +8561,12 @@ dtype: int64</pre>
 <pre>
 --------- DUPLICATE ROWS ---------
 0
+
+--------- DUPLICATE APPLICATION CHECK ---------
+0
+
+--------- REQUIRED COLUMN CHECK ---------
+[]
 
 --------- LOW-CARDINALITY COLUMN INSPECTION ---------
 

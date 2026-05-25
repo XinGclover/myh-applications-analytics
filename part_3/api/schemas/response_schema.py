@@ -16,7 +16,6 @@ class ApplicationResponse(BaseModel):
     study_form_normalized: str
     utbildningsanordnare: str
 
-    
 
 class RefreshResponse(BaseModel):
     status: str

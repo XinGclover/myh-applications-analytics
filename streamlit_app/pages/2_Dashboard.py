@@ -12,14 +12,13 @@ from core.data_loader import (
     build_export_applications_params,
     load_filtered_data,
     load_initial_data,
-    load_provider_applications,
 )
 from core.filters import get_filter_options, render_sidebar_filters
 from core.metrics import calculate_kpis, format_rate
 
 
 st.title("MYH Applications Dashboard")
-st.caption(f"API: {get_api_base_url()}/docs#")
+st.caption(f"API: {get_api_base_url()}")
 
 initial_data = load_initial_data()
 year_df = initial_data["year_stats"]
@@ -96,23 +95,8 @@ else:
 
 st.divider()
 
-st.subheader("Provider applications")
-if not filter_options["providers"]:
-    st.info("No providers available.")
-else:
-    selected_provider_name = st.selectbox("Provider", filter_options["providers"])
-    provider_applications_df = load_provider_applications(selected_provider_name)
 
-    if provider_applications_df.empty:
-        st.info("No applications found for this provider.")
-    else:
-        st.dataframe(
-            provider_applications_df,
-            use_container_width=True,
-            hide_index=True,
-        )
-
-st.title("⚙️ Operations")
+st.title("🛠️ Operations")
 st.markdown(
     """
     Use the tools below to manage the curated dataset. 
