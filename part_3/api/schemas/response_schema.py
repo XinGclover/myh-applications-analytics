@@ -22,3 +22,17 @@ class RefreshResponse(BaseModel):
     status: str
     rows_inserted: int
     validation_checks: int
+
+
+class StatsByYearResponse(BaseModel):
+    source_year: int
+    total_applications: int
+    approved_applications: int
+    approval_rate_percent: float
+
+
+class StatsByEducationAreaResponse(BaseModel):
+    utbildningsomrade: str
+    total_applications: int
+    approved_applications: int
+    approval_rate_percent: float
