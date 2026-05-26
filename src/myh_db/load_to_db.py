@@ -18,7 +18,12 @@ def load_data():
 
         # clear existing data
         with engine.begin() as conn:
-            conn.execute(text("TRUNCATE TABLE curated.yh_applications"))
+            conn.execute(
+                text("""
+                TRUNCATE TABLE curated.application_notes, curated.yh_applications
+                RESTART IDENTITY;
+            """)
+            )
 
         # load new data
         df.to_sql(

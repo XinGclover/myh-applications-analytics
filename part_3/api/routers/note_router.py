@@ -11,6 +11,7 @@ from part_3.api.services.note_service import (
     delete_note,
     update_note,
 )
+from part_3.api.utils.validation import ensure_application_exists
 
 
 router = APIRouter(
@@ -32,6 +33,8 @@ def create_application_note(
     Create a note attached to an application
     and return the stored record.
     """
+    ensure_application_exists(diarienummer)
+
     return create_note(diarienummer, note)
 
 
@@ -43,7 +46,10 @@ def get_application_notes(diarienummer: str):
     """
     Serve notes attached to one application.
     """
+    ensure_application_exists(diarienummer)
+
     return get_notes_by_diarienummer(diarienummer)
+
 
 
 @router.put(
@@ -56,9 +62,10 @@ def update_application_note(
     note: ApplicationNoteUpdate,
 ):
     """
-    Update a note attached to an application
-    or raise 404 when it is missing.
+    Update a note attached to an application.
     """
+    ensure_application_exists(diarienummer)
+
     updated_note = update_note(diarienummer, note_id, note)
 
     if not updated_note:
@@ -82,6 +89,8 @@ def delete_application_note(
     Delete a note attached to an application
     or raise 404 when it is missing.
     """
+    ensure_application_exists(diarienummer)
+
     deleted = delete_note(diarienummer, note_id)
 
     if not deleted:

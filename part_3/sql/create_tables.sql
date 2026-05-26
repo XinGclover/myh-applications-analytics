@@ -14,8 +14,6 @@ DROP TABLE IF EXISTS curated.yh_applications;
 
 CREATE TABLE curated.yh_applications (
 
-    application_id SERIAL PRIMARY KEY,
-
     -- source metadata
     source_year SMALLINT NOT NULL,
     source_file VARCHAR(100) NOT NULL,
@@ -23,7 +21,7 @@ CREATE TABLE curated.yh_applications (
     record_source VARCHAR(50) NOT NULL,
 
     -- application info
-    diarienummer VARCHAR(50) NOT NULL,
+    diarienummer VARCHAR(50) PRIMARY KEY,
     utbildningsnamn VARCHAR(200) NOT NULL,
     utbildningsomrade VARCHAR(50) NOT NULL,
 
@@ -101,11 +99,12 @@ CREATE TABLE IF NOT EXISTS curated.application_notes (
 
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    updated_at TIMESTAMP
+    updated_at TIMESTAMP,
+
+    CONSTRAINT fk_notes_diarienummer
+        FOREIGN KEY (diarienummer)
+        REFERENCES curated.yh_applications(diarienummer)
 );
-
-
--- indexes
 
 CREATE INDEX IF NOT EXISTS idx_notes_diarienummer
 ON curated.application_notes(diarienummer);

@@ -20,7 +20,6 @@ def get_applications(
     """
     query = """
         SELECT
-            application_id,
             source_year,
             diarienummer,
             utbildningsnamn,
@@ -63,7 +62,7 @@ def get_applications(
         query += " AND study_form_normalized ILIKE :study_form"
         params["study_form"] = study_form
 
-    query += " ORDER BY source_year DESC, application_id ASC LIMIT :limit"
+    query += " ORDER BY source_year DESC LIMIT :limit"
     params["limit"] = limit
 
     df = pd.read_sql(text(query), engine, params=params)
@@ -77,7 +76,6 @@ def get_application_by_diarienummer(diarienummer: str) -> dict | None:
     """
     query = text("""
         SELECT
-            application_id,
             source_year,
             diarienummer,
             utbildningsnamn,
@@ -109,3 +107,24 @@ def get_application_by_diarienummer(diarienummer: str) -> dict | None:
         return None
 
     return dict(result)
+
+
+def application_exists(diarienummer: str) -> bool:
+    """
+    Return True when an application with the given diarienummer exists
+    in the curated dataset, otherwise False.
+    """
+    query = text("""
+        SELECT 1
+        FROM curated.yh_applications
+        WHERE diarienummer = :diarienummer
+        LIMIT 1;
+    """)
+
+    with engine.begin() as conn:
+        result = conn.execute(
+            query,
+            {"diarienummer": diarienummer},
+        ).first()
+
+    return result is not None

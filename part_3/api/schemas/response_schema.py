@@ -2,7 +2,6 @@ from pydantic import BaseModel
 
 
 class ApplicationResponse(BaseModel):
-    application_id: int
     source_year: int
     diarienummer: str
     utbildningsnamn: str
