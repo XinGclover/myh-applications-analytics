@@ -2,7 +2,14 @@ from __future__ import annotations
 
 import streamlit as st
 
-from core.api_client import get_api_base_url, get_file, post_json
+from core.api_client import (
+    get_api_base_url,
+    get_file,
+    post_json,
+    load_dataframe_with_error,
+    delete_json,
+    put_json,
+)
 from core.config import (
     EXPORT_APPLICATIONS_ENDPOINT,
     EXPORT_STATS_BY_YEAR_ENDPOINT,
@@ -15,6 +22,7 @@ from core.data_loader import (
 )
 from core.filters import get_filter_options, render_sidebar_filters
 from core.metrics import calculate_kpis, format_rate
+import pandas as pd
 
 
 st.title("MYH Applications Dashboard")
@@ -56,7 +64,9 @@ chart_cols = st.columns(2)
 with chart_cols[0]:
     st.subheader("Applications by year")
     if year_stats_error:
-        st.warning("Yearly statistics are temporarily unavailable. Please refresh the page.")
+        st.warning(
+            "Yearly statistics are temporarily unavailable. Please refresh the page."
+        )
     elif year_df.empty:
         st.info("No yearly statistics available.")
     else:
@@ -76,6 +86,7 @@ with chart_cols[1]:
 st.divider()
 
 st.subheader("Filtered applications")
+
 if applications_df.empty:
     st.info("No applications match the current filters.")
 else:
@@ -91,14 +102,109 @@ else:
         "study_form_normalized",
         "utbildningsanordnare",
     ]
+
     visible_columns = [
         column for column in preferred_columns if column in applications_df.columns
     ]
-    st.dataframe(
+
+    selected = st.dataframe(
         applications_df[visible_columns],
         use_container_width=True,
         hide_index=True,
+        on_select="rerun",
+        selection_mode="single-row",
     )
+
+    selected_rows = selected.selection.rows
+
+    if selected_rows:
+        selected_row = applications_df.iloc[selected_rows[0]]
+        selected_diarienummer = selected_row["diarienummer"]
+
+        st.divider()
+        st.subheader("Application notes")
+
+        if "note_message" in st.session_state:
+            st.success(st.session_state.pop("note_message"))
+
+        st.caption(f"Selected application: {selected_diarienummer}")
+
+        note_endpoint = f"/applications/{selected_diarienummer}/note"
+
+        notes_df, notes_error = load_dataframe_with_error(note_endpoint)
+
+        note_exists = not notes_df.empty
+
+        if notes_error:
+            if "404" in notes_error:
+                st.info("No note for this application yet.")
+            else:
+                st.error(notes_error)
+
+        if note_exists:
+            st.dataframe(
+                notes_df,
+                use_container_width=True,
+                hide_index=True,
+            )
+
+        existing_note_text = ""
+        existing_is_flagged = False
+
+        if note_exists:
+            existing_note_text = notes_df.iloc[0]["note_text"]
+            existing_is_flagged = bool(notes_df.iloc[0]["is_flagged"])
+
+        note_text = st.text_area(
+            "Note text",
+            value=existing_note_text,
+        )
+
+        is_flagged = st.checkbox(
+            "Flag this application",
+            value=existing_is_flagged,
+        )
+
+        button_label = "Update note" if note_exists else "Create note"
+
+        col1, col2 = st.columns([1, 1])
+
+        with col1:
+            if st.button(button_label):
+                if not note_text.strip():
+                    st.warning("Please enter a note before saving.")
+                else:
+                    result, error = put_json(
+                        note_endpoint,
+                        payload={
+                            "note_text": note_text,
+                            "is_flagged": is_flagged,
+                        },
+                    )
+
+                    if error:
+                        st.error(error)
+                    else:
+                        st.cache_data.clear()
+                        st.success("Note saved successfully.")
+                        st.dataframe(
+                            pd.DataFrame([result]),
+                            use_container_width=True,
+                            hide_index=True,
+                        )
+
+        with col2:
+            if note_exists:
+                if st.button("Delete note"):
+                    deleted, delete_error = delete_json(note_endpoint)
+
+                    if delete_error:
+                        st.error(delete_error)
+                    else:
+                        st.cache_data.clear()
+                        st.success("Note deleted successfully.")
+                        st.info("No note for this application yet.")
+
 
 st.divider()
 

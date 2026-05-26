@@ -65,7 +65,10 @@ def get_json(endpoint: str, params: dict | None = None) -> tuple[list | dict | N
         return None, f"Could not parse JSON from {endpoint}."
 
 
-def post_json(endpoint: str) -> tuple[dict | None, str | None]:
+def post_json(
+    endpoint: str,
+    payload: dict | None = None,
+) -> tuple[dict | None, str | None]:
     """
     Send a POST request to the API
     and return either parsed JSON or an error message.
@@ -73,8 +76,13 @@ def post_json(endpoint: str) -> tuple[dict | None, str | None]:
     url = f"{get_api_base_url()}{endpoint}"
 
     try:
-        response = requests.post(url, timeout=REFRESH_TIMEOUT_SECONDS)
+        response = requests.post(
+            url,
+            json=payload,
+            timeout=REFRESH_TIMEOUT_SECONDS,
+        )
         response.raise_for_status()
+
     except requests.RequestException as exc:
         return None, get_error_message(endpoint, exc)
 
@@ -113,6 +121,9 @@ def load_dataframe_with_error(
     if error or not data:
         return pd.DataFrame(), error
 
+    if isinstance(data, dict):
+        return pd.DataFrame([data]), None
+
     return pd.DataFrame(data), None
 
 
@@ -128,3 +139,47 @@ def load_dataframe(endpoint: str, params: dict | None = None) -> pd.DataFrame:
         return df
 
     return df
+
+
+def put_json(
+    endpoint: str,
+    payload: dict | None = None,
+) -> tuple[dict | None, str | None]:
+    """
+    Send a PUT request to the API
+    and return either parsed JSON or an error message.
+    """
+    url = f"{get_api_base_url()}{endpoint}"
+
+    try:
+        response = requests.put(
+            url,
+            json=payload,
+            timeout=REFRESH_TIMEOUT_SECONDS,
+        )
+        response.raise_for_status()
+
+    except requests.RequestException as exc:
+        return None, get_error_message(endpoint, exc)
+
+    try:
+        return response.json(), None
+
+    except ValueError:
+        return None, f"Could not parse JSON from {endpoint}."
+
+
+def delete_json(endpoint: str) -> tuple[bool, str | None]:
+    """
+    Send a DELETE request to the API
+    and return success status or an error message.
+    """
+    url = f"{get_api_base_url()}{endpoint}"
+
+    try:
+        response = requests.delete(url, timeout=REFRESH_TIMEOUT_SECONDS)
+        response.raise_for_status()
+        return True, None
+
+    except requests.RequestException as exc:
+        return False, get_error_message(endpoint, exc)

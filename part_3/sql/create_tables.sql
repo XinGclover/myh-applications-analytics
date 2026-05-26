@@ -91,7 +91,7 @@ ON curated.yh_applications(is_approved);
 CREATE TABLE IF NOT EXISTS curated.application_notes (
     note_id SERIAL PRIMARY KEY,
 
-    diarienummer VARCHAR(50) NOT NULL,
+    diarienummer VARCHAR(50) NOT NULL UNIQUE,
 
     note_text TEXT NOT NULL,
 

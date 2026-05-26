@@ -3,13 +3,11 @@ from fastapi import APIRouter, HTTPException, status
 from part_3.api.schemas.request_schema import (
     ApplicationNoteCreate,
     ApplicationNoteResponse,
-    ApplicationNoteUpdate,
 )
 from part_3.api.services.note_service import (
-    create_note,
-    get_notes_by_diarienummer,
+    upsert_note,
+    get_note_by_diarienummer,
     delete_note,
-    update_note,
 )
 from part_3.api.utils.validation import ensure_application_exists
 
@@ -20,78 +18,54 @@ router = APIRouter(
 )
 
 
-@router.post(
-    "/{diarienummer:path}/notes",
+@router.put(
+    "/{diarienummer:path}/note",
     response_model=ApplicationNoteResponse,
-    status_code=status.HTTP_201_CREATED,
 )
-def create_application_note(
+def upsert_application_note(
     diarienummer: str,
     note: ApplicationNoteCreate,
 ):
     """
-    Create a note attached to an application
-    and return the stored record.
+    Create or update the note attached to one application.
     """
     ensure_application_exists(diarienummer)
 
-    return create_note(diarienummer, note)
+    return upsert_note(diarienummer, note)
 
 
 @router.get(
-    "/{diarienummer:path}/notes",
-    response_model=list[ApplicationNoteResponse],
-)
-def get_application_notes(diarienummer: str):
-    """
-    Serve notes attached to one application.
-    """
-    ensure_application_exists(diarienummer)
-
-    return get_notes_by_diarienummer(diarienummer)
-
-
-
-@router.put(
-    "/{diarienummer:path}/notes/{note_id}",
+    "/{diarienummer:path}/note",
     response_model=ApplicationNoteResponse,
 )
-def update_application_note(
-    diarienummer: str,
-    note_id: int,
-    note: ApplicationNoteUpdate,
-):
+def get_application_note(diarienummer: str):
     """
-    Update a note attached to an application.
+    Serve the note attached to one application.
     """
     ensure_application_exists(diarienummer)
 
-    updated_note = update_note(diarienummer, note_id, note)
+    note = get_note_by_diarienummer(diarienummer)
 
-    if not updated_note:
+    if not note:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Note not found",
         )
 
-    return updated_note
+    return note
 
 
 @router.delete(
-    "/{diarienummer:path}/notes/{note_id}",
+    "/{diarienummer:path}/note",
     status_code=status.HTTP_204_NO_CONTENT,
 )
-def delete_application_note(
-    diarienummer: str,
-    note_id: int,
-):
+def delete_application_note(diarienummer: str):
     """
-    Delete a note attached to an application
-    or raise 404 when it is missing.
+    Delete the note attached to one application.
     """
     ensure_application_exists(diarienummer)
 
-    deleted = delete_note(diarienummer, note_id)
+    deleted = delete_note(diarienummer)
 
     if not deleted:
         raise HTTPException(

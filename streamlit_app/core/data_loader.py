@@ -1,5 +1,3 @@
-from urllib.parse import quote
-
 from core.api_client import load_dataframe, load_dataframe_with_error
 from core.config import (
     APPLICATION_FILTER_KEYS,
@@ -41,15 +39,6 @@ def load_initial_data():
             params=all_applications_params,
         ),
     }
-
-
-def load_provider_applications(provider_name: str):
-    """
-    Load application records for a selected provider
-    using the provider drilldown endpoint.
-    """
-    provider_endpoint = f"{PROVIDERS_ENDPOINT}/{quote(provider_name, safe='')}/applications"
-    return load_dataframe(provider_endpoint)
 
 
 def build_export_applications_params(selected_filters: dict) -> dict:

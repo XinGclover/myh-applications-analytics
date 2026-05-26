@@ -11,9 +11,8 @@ app = FastAPI(
     title="MYH Applications API",
 )
 
-
-app.include_router(application_router)
 app.include_router(note_router)
+app.include_router(application_router)
 app.include_router(stats_router)
 app.include_router(export_router)
 app.include_router(refresh_router)
