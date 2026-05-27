@@ -50,8 +50,8 @@ def get_filter_options(year_df, all_applications_df, providers_df) -> dict:
 
 def get_municipality_options(all_applications_df, selected_region: str | None) -> list:
     """
-    Return municipality options, narrowed to the selected region
-    when a region filter is active.
+    Narrow municipality options dynamically
+    based on the currently selected region.
     """
     if all_applications_df.empty or "kommun" not in all_applications_df:
         return []
