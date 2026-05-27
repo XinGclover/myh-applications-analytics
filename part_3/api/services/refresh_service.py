@@ -12,7 +12,12 @@ def refresh_database() -> dict:
     curated_df, validation_summary = build_curated_dataset()
 
     with engine.begin() as conn:
-        conn.execute(text("TRUNCATE TABLE curated.yh_applications RESTART IDENTITY;"))
+        conn.execute(
+            text("""
+            TRUNCATE TABLE curated.application_notes, curated.yh_applications
+            RESTART IDENTITY;
+            """)
+        )
 
         curated_df.to_sql(
             "yh_applications",

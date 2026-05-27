@@ -68,6 +68,7 @@ def get_json(endpoint: str, params: dict | None = None) -> tuple[list | dict | N
 def post_json(
     endpoint: str,
     payload: dict | None = None,
+    headers: dict | None = None,
 ) -> tuple[dict | None, str | None]:
     """
     Send a POST request to the API
@@ -79,6 +80,7 @@ def post_json(
         response = requests.post(
             url,
             json=payload,
+            headers=headers,
             timeout=REFRESH_TIMEOUT_SECONDS,
         )
         response.raise_for_status()
@@ -88,6 +90,7 @@ def post_json(
 
     try:
         return response.json(), None
+
     except ValueError:
         return None, f"Could not parse JSON from {endpoint}."
 

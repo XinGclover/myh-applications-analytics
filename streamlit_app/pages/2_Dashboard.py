@@ -4,16 +4,10 @@ import streamlit as st
 
 from core.api_client import (
     get_api_base_url,
-    get_file,
-    post_json,
-    load_dataframe_with_error,
-    delete_json,
-    put_json,
 )
 from core.config import (
     EXPORT_APPLICATIONS_ENDPOINT,
     EXPORT_STATS_BY_YEAR_ENDPOINT,
-    REFRESH_ENDPOINT,
 )
 from core.data_loader import (
     build_export_applications_params,
@@ -22,7 +16,11 @@ from core.data_loader import (
 )
 from core.filters import get_filter_options, render_sidebar_filters
 from core.metrics import calculate_kpis, format_rate
-import pandas as pd
+from components.export_button import render_export_button
+from components.refresh_section import render_refresh_section
+from components.application_note import render_application_notes
+from components.application_table import render_application_table
+from components.bar_chart import render_bar_chart
 
 
 st.title("MYH Applications Dashboard")
@@ -62,148 +60,36 @@ st.divider()
 chart_cols = st.columns(2)
 
 with chart_cols[0]:
-    st.subheader("Applications by year")
-    if year_stats_error:
-        st.warning(
+    render_bar_chart(
+        title="Applications by year",
+        df=year_df,
+        index_column="source_year",
+        value_column="total_applications",
+        empty_message="No yearly statistics available.",
+        error_message=(
             "Yearly statistics are temporarily unavailable. Please refresh the page."
-        )
-    elif year_df.empty:
-        st.info("No yearly statistics available.")
-    else:
-        chart_df = year_df.set_index("source_year")["total_applications"]
-        st.bar_chart(chart_df)
+            if year_stats_error
+            else None
+        ),
+    )
 
 with chart_cols[1]:
-    st.subheader("Applications by education area")
-    if education_area_df.empty:
-        st.info("No education area statistics available.")
-    else:
-        top_areas_df = education_area_df.head(20).set_index("utbildningsomrade")[
-            "total_applications"
-        ]
-        st.bar_chart(top_areas_df)
+    render_bar_chart(
+        title="Applications by education area",
+        df=education_area_df,
+        index_column="utbildningsomrade",
+        value_column="total_applications",
+        empty_message="No education area statistics available.",
+        limit=20,
+    )
 
 st.divider()
 
-st.subheader("Filtered applications")
+selected_diarienummer = render_application_table(applications_df)
 
-if applications_df.empty:
-    st.info("No applications match the current filters.")
-else:
-    preferred_columns = [
-        "source_year",
-        "diarienummer",
-        "utbildningsnamn",
-        "utbildningsomrade",
-        "decision_normalized",
-        "is_approved",
-        "kommun",
-        "lan",
-        "study_form_normalized",
-        "utbildningsanordnare",
-    ]
-
-    visible_columns = [
-        column for column in preferred_columns if column in applications_df.columns
-    ]
-
-    selected = st.dataframe(
-        applications_df[visible_columns],
-        use_container_width=True,
-        hide_index=True,
-        on_select="rerun",
-        selection_mode="single-row",
-    )
-
-    selected_rows = selected.selection.rows
-
-    if selected_rows:
-        selected_row = applications_df.iloc[selected_rows[0]]
-        selected_diarienummer = selected_row["diarienummer"]
-
-        st.divider()
-        st.subheader("Application notes")
-
-        if "note_message" in st.session_state:
-            st.success(st.session_state.pop("note_message"))
-
-        st.caption(f"Selected application: {selected_diarienummer}")
-
-        note_endpoint = f"/applications/{selected_diarienummer}/note"
-
-        notes_df, notes_error = load_dataframe_with_error(note_endpoint)
-
-        note_exists = not notes_df.empty
-
-        if notes_error:
-            if "404" in notes_error:
-                st.info("No note for this application yet.")
-            else:
-                st.error(notes_error)
-
-        if note_exists:
-            st.dataframe(
-                notes_df,
-                use_container_width=True,
-                hide_index=True,
-            )
-
-        existing_note_text = ""
-        existing_is_flagged = False
-
-        if note_exists:
-            existing_note_text = notes_df.iloc[0]["note_text"]
-            existing_is_flagged = bool(notes_df.iloc[0]["is_flagged"])
-
-        note_text = st.text_area(
-            "Note text",
-            value=existing_note_text,
-        )
-
-        is_flagged = st.checkbox(
-            "Flag this application",
-            value=existing_is_flagged,
-        )
-
-        button_label = "Update note" if note_exists else "Create note"
-
-        col1, col2 = st.columns([1, 1])
-
-        with col1:
-            if st.button(button_label):
-                if not note_text.strip():
-                    st.warning("Please enter a note before saving.")
-                else:
-                    result, error = put_json(
-                        note_endpoint,
-                        payload={
-                            "note_text": note_text,
-                            "is_flagged": is_flagged,
-                        },
-                    )
-
-                    if error:
-                        st.error(error)
-                    else:
-                        st.cache_data.clear()
-                        st.success("Note saved successfully.")
-                        st.dataframe(
-                            pd.DataFrame([result]),
-                            use_container_width=True,
-                            hide_index=True,
-                        )
-
-        with col2:
-            if note_exists:
-                if st.button("Delete note"):
-                    deleted, delete_error = delete_json(note_endpoint)
-
-                    if delete_error:
-                        st.error(delete_error)
-                    else:
-                        st.cache_data.clear()
-                        st.success("Note deleted successfully.")
-                        st.info("No note for this application yet.")
+if selected_diarienummer:
+    st.divider()
+    render_application_notes(selected_diarienummer)
 
 
 st.divider()
@@ -219,25 +105,7 @@ st.markdown(
 
 st.divider()
 
-st.subheader("🔄 Refresh database")
-st.markdown(
-    "Trigger the backend refresh endpoint to rebuild and reload the curated dataset."
-)
-
-if st.button("Refresh Database", type="primary"):
-    with st.spinner("Refreshing database..."):
-        refresh_result, refresh_error = post_json(REFRESH_ENDPOINT)
-
-    if refresh_error:
-        st.error(refresh_error)
-    elif refresh_result:
-        st.cache_data.clear()
-        st.success(
-            "Refresh completed: "
-            f"status={refresh_result.get('status')}, "
-            f"rows_inserted={refresh_result.get('rows_inserted')}, "
-            f"validation_checks={refresh_result.get('validation_checks')}"
-        )
+render_refresh_section()
 
 st.divider()
 
@@ -250,41 +118,23 @@ export_applications_params = build_export_applications_params(selected_filters)
 
 export_cols = st.columns(2)
 
+export_cols = st.columns(2)
+
 with export_cols[0]:
-    st.markdown("#### 📄 Export applications dataset")
-    st.markdown("Download the filtered applications dataset as CSV.")
-
-    if st.button("Export Applications CSV", type="primary"):
-        with st.spinner("Preparing applications CSV..."):
-            applications_csv, applications_export_error = get_file(
-                EXPORT_APPLICATIONS_ENDPOINT,
-                params=export_applications_params,
-            )
-
-        if applications_export_error:
-            st.error(applications_export_error)
-        elif applications_csv:
-            st.download_button(
-                "Download Applications CSV",
-                data=applications_csv,
-                file_name="applications.csv",
-                mime="text/csv",
-            )
+    render_export_button(
+        title="📄 Export applications dataset",
+        description="Download the filtered applications dataset as CSV.",
+        button_label="Export Applications CSV",
+        endpoint=EXPORT_APPLICATIONS_ENDPOINT,
+        file_name="applications.csv",
+        params=export_applications_params,
+    )
 
 with export_cols[1]:
-    st.markdown("#### 📊 Export yearly statistics")
-    st.markdown("Download yearly statistics as CSV.")
-
-    if st.button("Export Stats By Year CSV", type="primary"):
-        with st.spinner("Preparing yearly stats CSV..."):
-            stats_csv, stats_export_error = get_file(EXPORT_STATS_BY_YEAR_ENDPOINT)
-
-        if stats_export_error:
-            st.error(stats_export_error)
-        elif stats_csv:
-            st.download_button(
-                "Download Stats By Year CSV",
-                data=stats_csv,
-                file_name="stats_by_year.csv",
-                mime="text/csv",
-            )
+    render_export_button(
+        title="📊 Export yearly statistics",
+        description="Download yearly statistics as CSV.",
+        button_label="Export Stats By Year CSV",
+        endpoint=EXPORT_STATS_BY_YEAR_ENDPOINT,
+        file_name="stats_by_year.csv",
+    )
