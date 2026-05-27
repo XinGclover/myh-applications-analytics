@@ -1,27 +1,6 @@
 # Deployment
 
-## Cloud Deployment
-
-The project is deployed using managed cloud services.
-
-### Deployment Overview
-
-| Layer | Service |
-|---|---|
-| Frontend | Streamlit Community Cloud |
-| Backend API | Render |
-| Database | Neon PostgreSQL |
-
-Live application:
-
-```text
-🔗 https://myh-applications-analytics.streamlit.app/
-```
-
-The Streamlit frontend communicates with the FastAPI backend hosted on Render, which connects to PostgreSQL hosted on Neon.
-
 ---
-
 ## Local Setup
 
 ### Python Version
@@ -115,3 +94,25 @@ FastAPI automatically provides Swagger UI documentation:
 ```text
 http://localhost:8000/docs
 ```
+
+## Cloud Deployment
+
+The project is deployed using managed cloud services.
+
+### Deployment Overview
+
+| Layer | Service |
+|---|---|
+| Frontend | Streamlit Community Cloud |
+| Backend API | Render |
+| Database | Neon PostgreSQL |
+
+Live application:
+
+
+🔗 https://myh-applications-analytics.streamlit.app/
+
+
+The Streamlit frontend communicates with the FastAPI backend hosted on Render, which connects to PostgreSQL hosted on Neon.
+
+
