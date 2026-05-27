@@ -7,12 +7,7 @@ The Streamlit app is the frontend for the MYH applications analytics platform.
 Main features:
 
 - interactive dashboard
-- filtering
-- KPI metrics
-- charts
 - notebook preview
-- CSV export
-- refresh operations
 
 The frontend lives in:
 
@@ -34,6 +29,7 @@ streamlit_app/
 streamlit_app/
 ├── app.py
 ├── pages/
+├── components/
 └── core/
 ```
 
@@ -45,6 +41,11 @@ streamlit_app/
 |---|---|
 | `app.py` | Streamlit entry point |
 | `pages/` | User-facing Streamlit pages |
+| `components/` | Reusable Streamlit UI components |
+| `components/application_table.py` | Filtered applications table and row selection |
+| `components/application_note.py` | Application note display and CRUD operations |
+| `components/export_button.py` | Reusable CSV export button |
+| `components/refresh_section.py` | Protected refresh UI with API key input |
 | `core/api_client.py` | HTTP communication with FastAPI |
 | `core/config.py` | Frontend constants and endpoint paths |
 | `core/data_loader.py` | Dashboard data loading helpers |
@@ -63,6 +64,7 @@ Current dashboard functionality includes:
 - education area statistics
 - filtered application table
 - provider filtering
+- application notes
 - CSV export
 - refresh operations
 
@@ -84,7 +86,7 @@ streamlit_app/notebooks/
 
 The frontend keeps:
 
-- UI logic inside Streamlit pages
+- reusable UI components
 - reusable logic inside `core/`
 - API communication separated in `api_client.py`
 

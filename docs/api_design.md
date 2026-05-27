@@ -10,7 +10,7 @@ Main features:
 - filtering
 - statistics
 - CSV export
-- notes
+- application notes
 - refresh operations
 
 ---
@@ -29,10 +29,9 @@ FastAPI automatically generates interactive API documentation through Swagger UI
 |---|---|---|
 | GET | `/applications` | Return filtered application records |
 | GET | `/applications/{diarienummer}` | Return a single application |
-| POST | `/applications/{diarienummer}/notes` | Create an application note |
-| GET | `/applications/{diarienummer}/notes` | Return application notes |
-| PUT | `/applications/{diarienummer}/notes/{note_id}` | Update an application note |
-| DELETE | `/applications/{diarienummer}/notes/{note_id}` | Delete an application note |
+| PUT | `/applications/{diarienummer}/note` | Create or update an application note |
+| GET | `/applications/{diarienummer}/note` | Return an application note |
+| DELETE | `/applications/{diarienummer}/note` | Delete an application note |
 | GET | `/stats/by-year` | Return yearly application statistics |
 | GET | `/stats/by-education-area` | Return statistics grouped by education area |
 | GET | `/export/applications` | Export application data as CSV |
@@ -43,16 +42,13 @@ FastAPI automatically generates interactive API documentation through Swagger UI
 
 ---
 
-## Local Development
+## Protected Refresh Endpoint
 
-Run the API with:
+The refresh endpoint triggers a full rebuild and reload of the curated dataset.
 
-```bash
-python -m uvicorn part_3.api.main:app --reload
-```
+Because this operation modifies the database, the endpoint is protected with a simple API key header.
 
-For full setup instructions, see:
+Required request header:
 
-```text
-docs/deployment.md
-```
+```http
+x-api-key: <refresh-api-key>
