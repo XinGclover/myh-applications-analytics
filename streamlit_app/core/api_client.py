@@ -9,7 +9,7 @@ import streamlit as st
 load_dotenv()
 
 
-REQUEST_TIMEOUT_SECONDS = 10
+REQUEST_TIMEOUT_SECONDS = 30
 REFRESH_TIMEOUT_SECONDS = 120
 EXPORT_TIMEOUT_SECONDS = 30
 
@@ -186,3 +186,15 @@ def delete_json(endpoint: str) -> tuple[bool, str | None]:
 
     except requests.RequestException as exc:
         return False, get_error_message(endpoint, exc)
+
+
+def warmup_api() -> None:
+    """
+    Wake up the Render API instance
+    before loading dashboard data.
+    """
+
+    requests.get(
+        f"{get_api_base_url()}/health",
+        timeout=REQUEST_TIMEOUT_SECONDS,
+    )

@@ -2,9 +2,7 @@ from __future__ import annotations
 
 import streamlit as st
 
-from core.api_client import (
-    get_api_base_url,
-)
+from core.api_client import get_api_base_url, warmup_api
 from core.config import (
     EXPORT_APPLICATIONS_ENDPOINT,
     EXPORT_STATS_BY_YEAR_ENDPOINT,
@@ -25,6 +23,11 @@ from components.bar_chart import render_bar_chart
 
 st.title("MYH Applications Dashboard")
 st.caption(f"API: {get_api_base_url()}")
+
+if "api_warmed" not in st.session_state:
+    with st.spinner("Waking up API server..."):
+        warmup_api()
+    st.session_state.api_warmed = True
 
 with st.spinner("Loading dashboard filters..."):
     initial_data = load_initial_data()
