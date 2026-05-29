@@ -6,6 +6,7 @@ from src.myh_pipeline.harmonize import harmonize_all_years
 from src.myh_pipeline.enrich import enrich_dataset
 from src.myh_pipeline.validate import build_validation_summary
 from src.myh_pipeline.config import FULL_REFRESH_YEARS
+from src.myh_pipeline.header_detection import refresh_source_metadata
 
 
 def build_curated_dataset():
@@ -13,6 +14,11 @@ def build_curated_dataset():
     Run the full MYH harmonization pipeline and return
     the curated dataframe with validation results.
     """
+
+    refresh_source_metadata(
+        years=FULL_REFRESH_YEARS,
+        sheet_name="Tabell 3",
+    )
 
     dfs = load_all_years(years=FULL_REFRESH_YEARS)
 

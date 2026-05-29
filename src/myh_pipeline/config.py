@@ -7,6 +7,8 @@ DATA_DIR = PROJECT_ROOT / "part_2" / "data"
 
 RAW_DATA_PATH = DATA_DIR / "raw"
 
+METADATA_PATH = DATA_DIR / "metadata"
+
 CURATED_DATA_PATH = DATA_DIR / "curated"
 
 
