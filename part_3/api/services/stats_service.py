@@ -25,11 +25,11 @@ def build_stats_filters(
         params["year"] = year
 
     if region:
-        filters.append("lan ILIKE :region")
+        filters.append("region ILIKE :region")
         params["region"] = f"%{region}%"
 
     if municipality:
-        filters.append("kommun ILIKE :municipality")
+        filters.append("municipality ILIKE :municipality")
         params["municipality"] = f"%{municipality}%"
 
     if decision:
@@ -37,7 +37,7 @@ def build_stats_filters(
         params["decision"] = f"%{decision}%"
 
     if provider:
-        filters.append("utbildningsanordnare ILIKE :provider")
+        filters.append("provider_name ILIKE :provider")
         params["provider"] = f"%{provider}%"
 
     if study_form:
@@ -112,7 +112,7 @@ def get_stats_by_education_area(
 
     query = f"""
         SELECT
-            utbildningsomrade,
+            education_area,
             COUNT(*) AS total_applications,
             SUM(CASE WHEN is_approved THEN 1 ELSE 0 END) AS approved_applications,
             ROUND(
@@ -122,7 +122,7 @@ def get_stats_by_education_area(
             ) AS approval_rate_percent
         FROM curated.yh_applications
         {where_clause}
-        GROUP BY utbildningsomrade
+        GROUP BY education_area
         ORDER BY total_applications DESC;
     """
 

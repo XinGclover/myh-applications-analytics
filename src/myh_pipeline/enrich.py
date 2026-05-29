@@ -191,8 +191,8 @@ def enrich_dataset(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
 
     df["is_approved"] = df["decision_normalized"].eq("approved")
-    df["education_length"] = df["yh_poang"].apply(classify_scope)
-    df["sector_category"] = df["sun5_inriktning_namn"].apply(classify_sector)
+    df["education_length"] = df["yh_credits"].apply(classify_scope)
+    df["sector_category"] = df["sun5_field_name"].apply(classify_sector)
     df["record_source"] = (
         df["source_year"].astype(str) + "_" + df["source_sheet"].astype(str)
     )

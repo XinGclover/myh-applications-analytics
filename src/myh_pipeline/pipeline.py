@@ -7,7 +7,6 @@ from src.myh_pipeline.enrich import enrich_dataset
 from src.myh_pipeline.validate import build_validation_summary
 from src.myh_pipeline.config import FULL_REFRESH_YEARS
 from src.myh_pipeline.header_detection import refresh_source_metadata
-from src.myh_pipeline.translate_columns import translate_columns
 
 
 def build_curated_dataset():
@@ -35,8 +34,6 @@ def build_curated_dataset():
     curated_df = curated_df.convert_dtypes()
 
     curated_df = enrich_dataset(curated_df)
-
-    curated_df = translate_columns(curated_df)
 
     validation_summary = build_validation_summary(curated_df)
 

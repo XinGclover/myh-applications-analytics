@@ -15,7 +15,7 @@ class ApplicationNoteUpdate(BaseModel):
 
 class ApplicationNoteResponse(BaseModel):
     note_id: int
-    diarienummer: str
+    application_id: str
     note_text: str
     is_flagged: bool
     created_at: datetime

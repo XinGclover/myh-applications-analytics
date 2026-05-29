@@ -6,15 +6,15 @@ import streamlit as st
 from core.api_client import delete_json, load_dataframe_with_error, put_json
 
 
-def render_application_notes(selected_diarienummer: str) -> None:
+def render_application_notes(selected_application_id: str) -> None:
     st.subheader("Application notes")
 
     if "note_message" in st.session_state:
         st.success(st.session_state.pop("note_message"))
 
-    st.caption(f"Selected application: {selected_diarienummer}")
+    st.caption(f"Selected application: {selected_application_id}")
 
-    note_endpoint = f"/applications/{selected_diarienummer}/note"
+    note_endpoint = f"/applications/{selected_application_id}/note"
 
     notes_df, notes_error = load_dataframe_with_error(note_endpoint)
 

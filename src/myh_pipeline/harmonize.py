@@ -19,18 +19,18 @@ def harmonize_schema(df, target_columns):
     # rename source columns to target names
     df = df.rename(columns=COLUMN_MAPPING)
 
-    if "beslut" in df.columns:
+    if "decision" in df.columns:
         df["decision_normalized"] = (
-            df["beslut"]
+            df["decision"]
             .astype("string")
             .str.strip()
             .map(DECISION_MAPPING)
             .fillna("other")
         )
 
-    if "studieform" in df.columns:
+    if "study_form" in df.columns:
         df["study_form_normalized"] = (
-            df["studieform"]
+            df["study_form"]
             .astype("string")
             .str.strip()
             .map(STUDY_FORM_MAPPING)

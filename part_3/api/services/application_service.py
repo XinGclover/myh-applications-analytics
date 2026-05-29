@@ -21,17 +21,17 @@ def get_applications(
     query = """
         SELECT
             source_year,
-            diarienummer,
-            utbildningsnamn,
-            utbildningsomrade,
-            beslut,
+            application_id,
+            education_name,
+            education_area,
+            decision,
             decision_normalized,
             is_approved,
-            kommun,
-            lan,
-            studieform,
+            municipality,
+            region,
+            study_form,
             study_form_normalized,
-            utbildningsanordnare
+            provider_name
         FROM curated.yh_applications
         WHERE 1 = 1
     """
@@ -47,15 +47,15 @@ def get_applications(
         params["decision"] = decision
 
     if region:
-        query += " AND lan ILIKE :region"
+        query += " AND region ILIKE :region"
         params["region"] = f"%{region}%"
 
     if municipality:
-        query += " AND kommun ILIKE :municipality"
+        query += " AND municipality ILIKE :municipality"
         params["municipality"] = f"%{municipality}%"
 
     if provider:
-        query += " AND utbildningsanordnare ILIKE :provider"
+        query += " AND provider_name ILIKE :provider"
         params["provider"] = f"%{provider}%"
 
     if study_form:
@@ -69,27 +69,27 @@ def get_applications(
     return dataframe_to_records(df)
 
 
-def get_application_by_diarienummer(diarienummer: str) -> dict | None:
+def get_application_by_id(application_id: str) -> dict | None:
     """
-    Return one application record by diarienummer
+    Return one application record by application ID
     or None when no match exists.
     """
     query = text("""
         SELECT
             source_year,
-            diarienummer,
-            utbildningsnamn,
-            utbildningsomrade,
-            beslut,
+            application_id,
+            education_name,
+            education_area,
+            decision,
             decision_normalized,
             is_approved,
-            kommun,
-            lan,
-            studieform,
+            municipality,
+            region,
+            study_form,
             study_form_normalized,
-            utbildningsanordnare
+            provider_name
         FROM curated.yh_applications
-        WHERE TRIM(diarienummer) = TRIM(:diarienummer)
+        WHERE application_id = :application_id
         LIMIT 1;
     """)
 
@@ -97,7 +97,7 @@ def get_application_by_diarienummer(diarienummer: str) -> dict | None:
         result = (
             conn.execute(
                 query,
-                {"diarienummer": diarienummer},
+                {"application_id": application_id},
             )
             .mappings()
             .first()
@@ -109,22 +109,22 @@ def get_application_by_diarienummer(diarienummer: str) -> dict | None:
     return dict(result)
 
 
-def application_exists(diarienummer: str) -> bool:
+def application_exists(application_id: str) -> bool:
     """
-    Return True when an application with the given diarienummer exists
+    Return True when an application with the given ID exists
     in the curated dataset, otherwise False.
     """
     query = text("""
         SELECT 1
         FROM curated.yh_applications
-        WHERE diarienummer = :diarienummer
+        WHERE application_id = :application_id
         LIMIT 1;
     """)
 
     with engine.begin() as conn:
         result = conn.execute(
             query,
-            {"diarienummer": diarienummer},
+            {"application_id": application_id},
         ).first()
 
     return result is not None

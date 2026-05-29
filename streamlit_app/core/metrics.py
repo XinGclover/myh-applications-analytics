@@ -15,8 +15,8 @@ def calculate_kpis(applications_df) -> dict:
         if "is_approved" in applications_df:
             approved_applications = int(applications_df["is_approved"].fillna(False).sum())
             approval_rate = approved_applications / total_applications * 100 if total_applications else 0.0
-        if "utbildningsanordnare" in applications_df:
-            providers_count = applications_df["utbildningsanordnare"].dropna().nunique()
+        if "provider_name" in applications_df:
+            providers_count = applications_df["provider_name"].dropna().nunique()
 
     return {
         "total_applications": total_applications,

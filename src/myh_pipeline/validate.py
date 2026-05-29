@@ -5,8 +5,6 @@ def build_validation_summary(df: pd.DataFrame) -> pd.DataFrame:
     """
     Build validation checks for key curated English fields
     before database loading.
-
-    This validation runs after translate_columns().
     """
 
     validation_summary = pd.DataFrame(

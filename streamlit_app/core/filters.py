@@ -24,8 +24,8 @@ def get_filter_options(year_df, all_applications_df, providers_df) -> dict:
         year_options = sorted(year_df["source_year"].dropna().astype(int).unique().tolist(), reverse=True)
 
     region_options = []
-    if not all_applications_df.empty and "lan" in all_applications_df:
-        region_options = sorted(all_applications_df["lan"].dropna().unique().tolist())
+    if not all_applications_df.empty and "region" in all_applications_df:
+        region_options = sorted(all_applications_df["region"].dropna().unique().tolist())
 
     decision_options = []
     if not all_applications_df.empty and "decision_normalized" in all_applications_df:
@@ -53,14 +53,14 @@ def get_municipality_options(all_applications_df, selected_region: str | None) -
     Narrow municipality options dynamically
     based on the currently selected region.
     """
-    if all_applications_df.empty or "kommun" not in all_applications_df:
+    if all_applications_df.empty or "municipality" not in all_applications_df:
         return []
 
     municipality_df = all_applications_df
-    if selected_region and "lan" in all_applications_df:
-        municipality_df = municipality_df[municipality_df["lan"] == selected_region]
+    if selected_region and "region" in all_applications_df:
+        municipality_df = municipality_df[municipality_df["region"] == selected_region]
 
-    return sorted(municipality_df["kommun"].dropna().unique().tolist())
+    return sorted(municipality_df["municipality"].dropna().unique().tolist())
 
 
 def render_sidebar_filters(options: dict, all_applications_df) -> dict:

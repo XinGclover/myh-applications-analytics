@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, status
 from part_3.api.schemas.response_schema import ApplicationResponse
 from part_3.api.services.application_service import (
     get_applications,
-    get_application_by_diarienummer,
+    get_application_by_id,
 )
 
 router = APIRouter(
@@ -46,10 +46,10 @@ def list_applications(
 )
 def get_application(diarienummer: str):
     """
-    Serve one application by diarienummer
+    Serve one application by ID
     or raise 404 when it is missing.
     """
-    application = get_application_by_diarienummer(diarienummer)
+    application = get_application_by_id(diarienummer)
 
     if not application:
         raise HTTPException(

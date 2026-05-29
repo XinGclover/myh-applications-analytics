@@ -6,15 +6,15 @@ import streamlit as st
 
 PREFERRED_APPLICATION_COLUMNS = [
     "source_year",
-    "diarienummer",
-    "utbildningsnamn",
-    "utbildningsomrade",
+    "application_id",
+    "education_name",
+    "education_area",
     "decision_normalized",
     "is_approved",
-    "kommun",
-    "lan",
+    "municipality",
+    "region",
     "study_form_normalized",
-    "utbildningsanordnare",
+    "provider_name",
 ]
 
 
@@ -45,4 +45,4 @@ def render_application_table(applications_df: pd.DataFrame) -> str | None:
         return None
 
     selected_row = applications_df.iloc[selected_rows[0]]
-    return selected_row["diarienummer"]
+    return selected_row["application_id"]

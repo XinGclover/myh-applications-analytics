@@ -6,7 +6,7 @@ from part_3.api.schemas.request_schema import (
 )
 from part_3.api.services.note_service import (
     upsert_note,
-    get_note_by_diarienummer,
+    get_note_by_application_id,
     delete_note,
 )
 from part_3.api.utils.validation import ensure_application_exists
@@ -44,7 +44,7 @@ def get_application_note(diarienummer: str):
     """
     ensure_application_exists(diarienummer)
 
-    note = get_note_by_diarienummer(diarienummer)
+    note = get_note_by_application_id(diarienummer)
 
     if not note:
         raise HTTPException(

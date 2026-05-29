@@ -32,7 +32,7 @@ CREATE TABLE curated.yh_applications (
 
     -- geography
     municipality VARCHAR(100) NOT NULL,
-    county VARCHAR(100) NOT NULL,
+    region VARCHAR(100) NOT NULL,
 
     -- education details
     yh_credits SMALLINT NOT NULL,
@@ -69,8 +69,8 @@ CREATE TABLE curated.yh_applications (
 CREATE INDEX idx_applications_year
 ON curated.yh_applications(source_year);
 
-CREATE INDEX idx_applications_county
-ON curated.yh_applications(county);
+CREATE INDEX idx_applications_region
+ON curated.yh_applications(region);
 
 CREATE INDEX idx_applications_provider
 ON curated.yh_applications(provider_name);

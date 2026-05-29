@@ -77,7 +77,7 @@ with chart_cols[1]:
     render_bar_chart(
         title="Applications by education area",
         df=education_area_df,
-        index_column="utbildningsomrade",
+        index_column="education_area",
         value_column="total_applications",
         empty_message="No education area statistics available.",
         limit=20,
@@ -85,11 +85,11 @@ with chart_cols[1]:
 
 st.divider()
 
-selected_diarienummer = render_application_table(applications_df)
+selected_application_id = render_application_table(applications_df)
 
-if selected_diarienummer:
+if selected_application_id:
     st.divider()
-    render_application_notes(selected_diarienummer)
+    render_application_notes(selected_application_id)
 
 
 st.divider()

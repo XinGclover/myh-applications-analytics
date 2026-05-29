@@ -3,17 +3,17 @@ from pydantic import BaseModel
 
 class ApplicationResponse(BaseModel):
     source_year: int
-    diarienummer: str
-    utbildningsnamn: str
-    utbildningsomrade: str
-    beslut: str
+    application_id: str
+    education_name: str
+    education_area: str
+    decision: str
     decision_normalized: str
     is_approved: bool
-    kommun: str
-    lan: str
-    studieform: str
+    municipality: str
+    region: str
+    study_form: str
     study_form_normalized: str
-    utbildningsanordnare: str
+    provider_name: str
 
 
 class RefreshResponse(BaseModel):
@@ -30,7 +30,7 @@ class StatsByYearResponse(BaseModel):
 
 
 class StatsByEducationAreaResponse(BaseModel):
-    utbildningsomrade: str
+    education_area: str
     total_applications: int
     approved_applications: int
     approval_rate_percent: float

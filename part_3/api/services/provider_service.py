@@ -13,12 +13,12 @@ def get_providers() -> list[dict]:
     """
     query = text("""
         SELECT
-            utbildningsanordnare AS provider_name,
+            provider_name,
             COUNT(*) AS application_count,
             SUM(CASE WHEN is_approved = TRUE THEN 1 ELSE 0 END) AS approved_count
         FROM curated.yh_applications
-        GROUP BY utbildningsanordnare
-        ORDER BY utbildningsanordnare;
+        GROUP BY provider_name
+        ORDER BY provider_name;
     """)
 
     df = pd.read_sql(query, engine)
@@ -34,8 +34,8 @@ def get_provider_applications(provider_name: str) -> list[dict]:
     query = text("""
         SELECT *
         FROM curated.yh_applications
-        WHERE utbildningsanordnare ILIKE :provider_name
-        ORDER BY source_year DESC, diarienummer;
+        WHERE provider_name ILIKE :provider_name
+        ORDER BY source_year DESC, application_id;
     """)
 
     params = {"provider_name": f"%{provider_name}%"}

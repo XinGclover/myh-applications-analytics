@@ -30,7 +30,7 @@ COLUMN_TRANSLATIONS = {
 
     # geography
     "kommun": "municipality",
-    "lan": "county",
+    "lan": "region",
 
     # decision
     "beslut": "decision",
@@ -65,4 +65,3 @@ def translate_columns(df: pd.DataFrame) -> pd.DataFrame:
     """
 
     return df.rename(columns=COLUMN_TRANSLATIONS)
-
