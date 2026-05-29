@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The data pipeline transforms raw MYH Excel files into one harmonized curated dataset used by PostgreSQL, FastAPI, and the Streamlit dashboard.
+The data pipeline transforms raw MYH Excel files into one English curated dataset used by PostgreSQL, FastAPI, Streamlit, and CSV exports.
 
 ---
 
@@ -15,15 +15,17 @@ Load Data
     ↓
 Clean Data
     ↓
-Harmonize Columns
+Harmonize Swedish Columns
     ↓
 Combine Years
     ↓
 Enrich Dataset
     ↓
+Translate Columns
+    ↓
 Validate Dataset
     ↓
-Curated CSV
+Curated CSV / PostgreSQL Load
 ```
 
 ---
@@ -58,11 +60,12 @@ The notebook in `part_2/notebooks/` demonstrates:
 |---|---|
 | 1 | Inspect Excel files and sheets |
 | 2 | Clean yearly datasets |
-| 3 | Harmonize columns across years |
+| 3 | Harmonize columns across years using Swedish-normalized names |
 | 4 | Combine yearly dataframes |
 | 5 | Add enrichment fields |
-| 6 | Validate the curated dataset |
-| 7 | Export the curated CSV |
+| 6 | Translate columns into the English curated schema |
+| 7 | Validate the curated dataset |
+| 8 | Export the curated CSV |
 
 The notebook acts both as data processing code and project documentation.
 
@@ -88,10 +91,45 @@ build_curated_dataset()
 |---|---|
 | `load.py` | Read Excel files |
 | `clean.py` | Apply initial cleaning |
-| `harmonize.py` | Standardize columns across years |
+| `harmonize.py` | Standardize yearly files into Swedish-normalized columns |
 | `enrich.py` | Add analysis-ready fields |
+| `translate_columns.py` | Translate Swedish-normalized columns into English curated analytics fields |
 | `validate.py` | Create validation checks |
 | `pipeline.py` | Coordinate the full process |
+
+---
+
+## Column Translation Layer
+
+The project keeps a clear separation between source fields, intermediate fields, and final analytics fields.
+
+| Layer | Purpose |
+|---|---|
+| Raw Excel fields | Preserve the original MYH source layout and Swedish names |
+| Swedish-normalized harmonized fields | Support traceability, debugging, and cross-year harmonization |
+| English curated fields | Provide stable names for PostgreSQL, FastAPI, Streamlit, exports, and analytics |
+
+Important examples:
+
+| Source / Harmonized Field | English Curated Field |
+|---|---|
+| `diarienummer` | `application_id` |
+| `utbildningsnamn` | `education_name` |
+| `utbildningsomrade` | `education_area` |
+| `beslut` | `decision` |
+| `kommun` | `municipality` |
+| `län` / `lan` | `region` |
+| `yh_poang` | `yh_credits` |
+| `studieform` | `study_form` |
+| `studietakt_procent` | `study_pace_percent` |
+| `utbildningsanordnare` | `provider_name` |
+| `huvudmannatyp` | `provider_type` |
+| `sun5_inriktning` | `sun5_field` |
+| `sun5_inriktning_namn` | `sun5_field_name` |
+| `seqf_niva` | `seqf_level` |
+| `smalt_yrkesomrade` | `narrow_occupational_area` |
+
+The Swedish field `län` describes a Swedish regional administrative area. The curated schema uses `region` because it matches the dashboard language and avoids confusing this value with a national field.
 
 ---
 
@@ -146,6 +184,4 @@ This reruns the reusable pipeline directly from the backend.
 | 5 | Return status and validation results |
 
 This allows the database to be refreshed without manually rerunning the notebook.
-
-
 

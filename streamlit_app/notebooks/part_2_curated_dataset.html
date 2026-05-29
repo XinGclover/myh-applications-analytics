@@ -7585,6 +7585,8 @@ a.anchor-link {
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">src.myh_pipeline.validate</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_validation_summary</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.myh_pipeline.translate_columns</span><span class="w"> </span><span class="kn">import</span> <span class="n">translate_columns</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">src.myh_pipeline.enrich</span><span class="w"> </span><span class="kn">import</span> <span class="n">enrich_dataset</span>
 </pre></div>
 </div>
@@ -7613,8 +7615,8 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Step-1:-Load-and-Combine-Raw-Excel-Files">Step 1: Load and Combine Raw Excel Files<a class="anchor-link" href="#Step-1:-Load-and-Combine-Raw-Excel-Files">¶</a></h2><p>The project uses MYH application result files from 2021–2025.</p>
-<p>These years were selected because they provide useful historical coverage while keeping the schema harmonization manageable. Earlier years can contain larger structural differences, but 2021–2025 still show variations in Excel layout and formatting while remaining suitable for building a unified multi-year dataset.</p>
+<h2 id="Step-1:-Load-and-Combine-Raw-Excel-Files">Step 1: Load and Combine Raw Excel Files<a class="anchor-link" href="#Step-1:-Load-and-Combine-Raw-Excel-Files">¶</a></h2><p>The project uses MYH application result files from 2020–2025.</p>
+<p>These years were selected because they provide useful historical coverage while keeping the schema harmonization manageable. Earlier years can contain larger structural differences, but 2020–2025 still show variations in Excel layout and formatting while remaining suitable for building a unified multi-year dataset.</p>
 <p>In this step, the raw Excel files are loaded from the raw data directory. A source year is extracted from the filename so each record can be traced back to its original file.</p>
 <p>Although the selected years use mostly consistent column names, the Excel files still contain structural differences between years, such as varying header row positions and metadata rows before the actual tables.</p>
 <p>Combining the yearly datasets makes it easier to:</p>
@@ -7652,7 +7654,9 @@ a.anchor-link {
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Loading file: resultat-ansokningsomgang-2022.xlsx
+<pre>Loading file: resultat-ansokningsomgang-2020.xlsx
+Loading file: resultat-ansokningsomgang-2021.xlsx
+Loading file: resultat-ansokningsomgang-2022.xlsx
 Loading file: resultat-ansokningsomgang-2023.xlsx
 Loading file: resultat-ansokningsomgang-2024.xlsx
 Loading file: resultat-ansokningsomgang-2025.xlsx
@@ -7730,24 +7734,36 @@ Loading file: resultat-ansokningsomgang-2025.xlsx
 <tbody>
 <tr>
 <th>0</th>
+<td>2020</td>
+<td>(1482, 19)</td>
+<td>[Utbildningsområde, Utbildningsnamn, Län, Komm...</td>
+</tr>
+<tr>
+<th>1</th>
+<td>2021</td>
+<td>(1238, 20)</td>
+<td>[Utbildningsområde, Utbildningsnamn, Län, Komm...</td>
+</tr>
+<tr>
+<th>2</th>
 <td>2022</td>
 <td>(1207, 19)</td>
 <td>[Utbildningsområde, Utbildningsnamn, Beslut, D...</td>
 </tr>
 <tr>
-<th>1</th>
+<th>3</th>
 <td>2023</td>
 <td>(1258, 31)</td>
 <td>[Utbildningsområde, SUN5 inriktning, SUN5 inri...</td>
 </tr>
 <tr>
-<th>2</th>
+<th>4</th>
 <td>2024</td>
 <td>(1272, 31)</td>
 <td>[Utbildningsområde, SUN5 inriktning, SUN5 inri...</td>
 </tr>
 <tr>
-<th>3</th>
+<th>5</th>
 <td>2025</td>
 <td>(1184, 31)</td>
 <td>[Utbildningsområde, SUN5 inriktning, SUN5 inri...</td>
@@ -7885,19 +7901,19 @@ Loading file: resultat-ansokningsomgang-2025.xlsx
 </tr>
 <tr>
 <th>3</th>
-<td>diarienummer</td>
+<td>application_id</td>
 </tr>
 <tr>
 <th>4</th>
-<td>utbildningsnamn</td>
+<td>education_name</td>
 </tr>
 <tr>
 <th>5</th>
-<td>utbildningsomrade</td>
+<td>education_area</td>
 </tr>
 <tr>
 <th>6</th>
-<td>beslut</td>
+<td>decision</td>
 </tr>
 <tr>
 <th>7</th>
@@ -7905,19 +7921,19 @@ Loading file: resultat-ansokningsomgang-2025.xlsx
 </tr>
 <tr>
 <th>8</th>
-<td>kommun</td>
+<td>municipality</td>
 </tr>
 <tr>
 <th>9</th>
-<td>lan</td>
+<td>region</td>
 </tr>
 <tr>
 <th>10</th>
-<td>yh_poang</td>
+<td>yh_credits</td>
 </tr>
 <tr>
 <th>11</th>
-<td>studieform</td>
+<td>study_form</td>
 </tr>
 <tr>
 <th>12</th>
@@ -7925,31 +7941,31 @@ Loading file: resultat-ansokningsomgang-2025.xlsx
 </tr>
 <tr>
 <th>13</th>
-<td>studietakt_procent</td>
+<td>study_pace_percent</td>
 </tr>
 <tr>
 <th>14</th>
-<td>utbildningsanordnare</td>
+<td>provider_name</td>
 </tr>
 <tr>
 <th>15</th>
-<td>huvudmannatyp</td>
+<td>provider_type</td>
 </tr>
 <tr>
 <th>16</th>
-<td>sun5_inriktning</td>
+<td>sun5_field</td>
 </tr>
 <tr>
 <th>17</th>
-<td>sun5_inriktning_namn</td>
+<td>sun5_field_name</td>
 </tr>
 <tr>
 <th>18</th>
-<td>seqf_niva</td>
+<td>seqf_level</td>
 </tr>
 <tr>
 <th>19</th>
-<td>smalt_yrkesomrade</td>
+<td>narrow_occupational_area</td>
 </tr>
 </tbody>
 </table>
@@ -8030,24 +8046,36 @@ Loading file: resultat-ansokningsomgang-2025.xlsx
 <tbody>
 <tr>
 <th>0</th>
+<td>2020</td>
+<td>(1482, 19)</td>
+<td>[utbildningsomrade, utbildningsnamn, lan, komm...</td>
+</tr>
+<tr>
+<th>1</th>
+<td>2021</td>
+<td>(1238, 20)</td>
+<td>[utbildningsomrade, utbildningsnamn, lan, komm...</td>
+</tr>
+<tr>
+<th>2</th>
 <td>2022</td>
 <td>(1207, 19)</td>
 <td>[utbildningsomrade, utbildningsnamn, beslut, d...</td>
 </tr>
 <tr>
-<th>1</th>
+<th>3</th>
 <td>2023</td>
 <td>(1258, 31)</td>
 <td>[utbildningsomrade, sun5_inriktning, sun5_inri...</td>
 </tr>
 <tr>
-<th>2</th>
+<th>4</th>
 <td>2024</td>
 <td>(1272, 31)</td>
 <td>[utbildningsomrade, sun5_inriktning, sun5_inri...</td>
 </tr>
 <tr>
-<th>3</th>
+<th>5</th>
 <td>2025</td>
 <td>(1184, 31)</td>
 <td>[utbildningsomrade, sun5_inriktning, sun5_inri...</td>
@@ -8130,27 +8158,39 @@ Loading file: resultat-ansokningsomgang-2025.xlsx
 <tbody>
 <tr>
 <th>0</th>
-<td>2022</td>
-<td>(1207, 20)</td>
-<td>[source_year, source_file, source_sheet, diari...</td>
+<td>2020</td>
+<td>(1482, 20)</td>
+<td>[source_year, source_file, source_sheet, appli...</td>
 </tr>
 <tr>
 <th>1</th>
-<td>2023</td>
-<td>(1258, 20)</td>
-<td>[source_year, source_file, source_sheet, diari...</td>
+<td>2021</td>
+<td>(1238, 20)</td>
+<td>[source_year, source_file, source_sheet, appli...</td>
 </tr>
 <tr>
 <th>2</th>
-<td>2024</td>
-<td>(1272, 20)</td>
-<td>[source_year, source_file, source_sheet, diari...</td>
+<td>2022</td>
+<td>(1207, 20)</td>
+<td>[source_year, source_file, source_sheet, appli...</td>
 </tr>
 <tr>
 <th>3</th>
+<td>2023</td>
+<td>(1258, 20)</td>
+<td>[source_year, source_file, source_sheet, appli...</td>
+</tr>
+<tr>
+<th>4</th>
+<td>2024</td>
+<td>(1272, 20)</td>
+<td>[source_year, source_file, source_sheet, appli...</td>
+</tr>
+<tr>
+<th>5</th>
 <td>2025</td>
 <td>(1184, 20)</td>
-<td>[source_year, source_file, source_sheet, diari...</td>
+<td>[source_year, source_file, source_sheet, appli...</td>
 </tr>
 </tbody>
 </table>
@@ -8203,7 +8243,7 @@ Loading file: resultat-ansokningsomgang-2025.xlsx
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
 <pre>-------- CURATED DATASET OVERVIEW --------
-Rows: 4921
+Rows: 7641
 Columns: 24
 </pre>
 </div>
@@ -8232,20 +8272,20 @@ Columns: 24
 <th>source_year</th>
 <th>source_file</th>
 <th>source_sheet</th>
-<th>diarienummer</th>
-<th>utbildningsnamn</th>
-<th>utbildningsomrade</th>
-<th>beslut</th>
+<th>application_id</th>
+<th>education_name</th>
+<th>education_area</th>
+<th>decision</th>
 <th>decision_normalized</th>
-<th>kommun</th>
-<th>lan</th>
+<th>municipality</th>
+<th>region</th>
 <th>...</th>
-<th>utbildningsanordnare</th>
-<th>huvudmannatyp</th>
-<th>sun5_inriktning</th>
-<th>sun5_inriktning_namn</th>
-<th>seqf_niva</th>
-<th>smalt_yrkesomrade</th>
+<th>provider_name</th>
+<th>provider_type</th>
+<th>sun5_field</th>
+<th>sun5_field_name</th>
+<th>seqf_level</th>
+<th>narrow_occupational_area</th>
 <th>is_approved</th>
 <th>education_length</th>
 <th>sector_category</th>
@@ -8255,38 +8295,14 @@ Columns: 24
 <tbody>
 <tr>
 <th>0</th>
-<td>2022</td>
-<td>resultat-ansokningsomgang-2022.xlsx</td>
+<td>2020</td>
+<td>resultat-ansokningsomgang-2020.xlsx</td>
 <td>Tabell 3</td>
-<td>MYH 2022/5458</td>
-<td>.NET Cloud developer</td>
-<td>Data/IT</td>
-<td>Avslag</td>
-<td>rejected</td>
-<td>Stockholm</td>
-<td>Stockholm</td>
-<td>...</td>
-<td>IT-Högskolan Stockholm AB</td>
-<td>Privat</td>
-<td>&lt;NA&gt;</td>
-<td>&lt;NA&gt;</td>
-<td>&lt;NA&gt;</td>
-<td>&lt;NA&gt;</td>
-<td>False</td>
-<td>long</td>
-<td>unknown</td>
-<td>2022_Tabell 3</td>
-</tr>
-<tr>
-<th>1</th>
-<td>2022</td>
-<td>resultat-ansokningsomgang-2022.xlsx</td>
-<td>Tabell 3</td>
-<td>MYH 2022/4695</td>
+<td>MYH 2020/4419</td>
 <td>.NET Developer</td>
 <td>Data/IT</td>
-<td>Avslag</td>
-<td>rejected</td>
+<td>Ej beviljad</td>
+<td>other</td>
 <td>Flera kommuner</td>
 <td>Flera kommuner</td>
 <td>...</td>
@@ -8299,20 +8315,68 @@ Columns: 24
 <td>False</td>
 <td>long</td>
 <td>unknown</td>
-<td>2022_Tabell 3</td>
+<td>2020_Tabell 3</td>
+</tr>
+<tr>
+<th>1</th>
+<td>2020</td>
+<td>resultat-ansokningsomgang-2020.xlsx</td>
+<td>Tabell 3</td>
+<td>MYH 2020/4482</td>
+<td>.NET Developer</td>
+<td>Data/IT</td>
+<td>Ej beviljad</td>
+<td>other</td>
+<td>Malmö</td>
+<td>Skåne</td>
+<td>...</td>
+<td>KYH AB Malmö</td>
+<td>Privat</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>False</td>
+<td>long</td>
+<td>unknown</td>
+<td>2020_Tabell 3</td>
 </tr>
 <tr>
 <th>2</th>
-<td>2022</td>
-<td>resultat-ansokningsomgang-2022.xlsx</td>
+<td>2020</td>
+<td>resultat-ansokningsomgang-2020.xlsx</td>
 <td>Tabell 3</td>
-<td>MYH 2022/4476</td>
+<td>MYH 2020/5610</td>
+<td>.net utvecklare</td>
+<td>Data/IT</td>
+<td>Ej beviljad</td>
+<td>other</td>
+<td>Göteborg</td>
+<td>Västra Götaland</td>
+<td>...</td>
+<td>ABF Göteborg Vuxenutbildning AB</td>
+<td>Privat</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>False</td>
+<td>long</td>
+<td>unknown</td>
+<td>2020_Tabell 3</td>
+</tr>
+<tr>
+<th>3</th>
+<td>2020</td>
+<td>resultat-ansokningsomgang-2020.xlsx</td>
+<td>Tabell 3</td>
+<td>MYH 2020/4403</td>
 <td>.NET Utvecklare</td>
 <td>Data/IT</td>
 <td>Beviljad</td>
 <td>approved</td>
-<td>Gävle</td>
-<td>Gävleborg</td>
+<td>Göteborg</td>
+<td>Västra Götaland</td>
 <td>...</td>
 <td>Plushögskolan AB - Teknikhögskolan</td>
 <td>Privat</td>
@@ -8323,59 +8387,383 @@ Columns: 24
 <td>True</td>
 <td>long</td>
 <td>unknown</td>
-<td>2022_Tabell 3</td>
-</tr>
-<tr>
-<th>3</th>
-<td>2022</td>
-<td>resultat-ansokningsomgang-2022.xlsx</td>
-<td>Tabell 3</td>
-<td>MYH 2022/4708</td>
-<td>.NET Utvecklare</td>
-<td>Data/IT</td>
-<td>Avslag</td>
-<td>rejected</td>
-<td>Flera kommuner</td>
-<td>Flera kommuner</td>
-<td>...</td>
-<td>Plushögskolan AB - Teknikhögskolan Mitt</td>
-<td>Privat</td>
-<td>&lt;NA&gt;</td>
-<td>&lt;NA&gt;</td>
-<td>&lt;NA&gt;</td>
-<td>&lt;NA&gt;</td>
-<td>False</td>
-<td>long</td>
-<td>unknown</td>
-<td>2022_Tabell 3</td>
+<td>2020_Tabell 3</td>
 </tr>
 <tr>
 <th>4</th>
-<td>2022</td>
-<td>resultat-ansokningsomgang-2022.xlsx</td>
+<td>2020</td>
+<td>resultat-ansokningsomgang-2020.xlsx</td>
 <td>Tabell 3</td>
-<td>MYH 2022/5529</td>
+<td>MYH 2020/5766</td>
 <td>.NET-utvecklare</td>
 <td>Data/IT</td>
-<td>Avslag</td>
-<td>rejected</td>
-<td>Kungälv</td>
-<td>Västra Götaland</td>
+<td>Beviljad</td>
+<td>approved</td>
+<td>Stockholm</td>
+<td>Stockholm</td>
 <td>...</td>
-<td>Optimum Education AB</td>
+<td>IT-Högskolan Stockholm AB</td>
 <td>Privat</td>
 <td>&lt;NA&gt;</td>
 <td>&lt;NA&gt;</td>
 <td>&lt;NA&gt;</td>
 <td>&lt;NA&gt;</td>
-<td>False</td>
+<td>True</td>
 <td>long</td>
 <td>unknown</td>
-<td>2022_Tabell 3</td>
+<td>2020_Tabell 3</td>
 </tr>
 </tbody>
 </table>
 <p>5 rows × 24 columns</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=86a69ff7">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h2 id="Step-7:-Translate-to-English-Curated-Layer">Step 7: Translate to English Curated Layer<a class="anchor-link" href="#Step-7:-Translate-to-English-Curated-Layer">¶</a></h2><p>After the data has been harmonized and enriched using normalized Swedish field names, the final curated dataset is translated into English column names.</p>
+<p>This creates an analytics-friendly dataset for PostgreSQL, FastAPI, Streamlit, and later reporting or machine learning work.</p>
+<p>The Swedish-normalized layer is useful for debugging and tracing fields back to the original MYH Excel files, while the English curated layer is used by the application and database.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=1f7d2467">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [10]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">curated_df</span> <span class="o">=</span> <span class="n">translate_columns</span><span class="p">(</span><span class="n">curated_df</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"-------- ENGLISH CURATED DATASET OVERVIEW --------"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Rows: </span><span class="si">{</span><span class="n">curated_df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Columns: </span><span class="si">{</span><span class="n">curated_df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="n">curated_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>-------- ENGLISH CURATED DATASET OVERVIEW --------
+Rows: 7641
+Columns: 24
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[10]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>source_year</th>
+<th>source_file</th>
+<th>source_sheet</th>
+<th>application_id</th>
+<th>education_name</th>
+<th>education_area</th>
+<th>decision</th>
+<th>decision_normalized</th>
+<th>municipality</th>
+<th>region</th>
+<th>...</th>
+<th>provider_name</th>
+<th>provider_type</th>
+<th>sun5_field</th>
+<th>sun5_field_name</th>
+<th>seqf_level</th>
+<th>narrow_occupational_area</th>
+<th>is_approved</th>
+<th>education_length</th>
+<th>sector_category</th>
+<th>record_source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>2020</td>
+<td>resultat-ansokningsomgang-2020.xlsx</td>
+<td>Tabell 3</td>
+<td>MYH 2020/4419</td>
+<td>.NET Developer</td>
+<td>Data/IT</td>
+<td>Ej beviljad</td>
+<td>other</td>
+<td>Flera kommuner</td>
+<td>Flera kommuner</td>
+<td>...</td>
+<td>KYH AB</td>
+<td>Privat</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>False</td>
+<td>long</td>
+<td>unknown</td>
+<td>2020_Tabell 3</td>
+</tr>
+<tr>
+<th>1</th>
+<td>2020</td>
+<td>resultat-ansokningsomgang-2020.xlsx</td>
+<td>Tabell 3</td>
+<td>MYH 2020/4482</td>
+<td>.NET Developer</td>
+<td>Data/IT</td>
+<td>Ej beviljad</td>
+<td>other</td>
+<td>Malmö</td>
+<td>Skåne</td>
+<td>...</td>
+<td>KYH AB Malmö</td>
+<td>Privat</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>False</td>
+<td>long</td>
+<td>unknown</td>
+<td>2020_Tabell 3</td>
+</tr>
+<tr>
+<th>2</th>
+<td>2020</td>
+<td>resultat-ansokningsomgang-2020.xlsx</td>
+<td>Tabell 3</td>
+<td>MYH 2020/5610</td>
+<td>.net utvecklare</td>
+<td>Data/IT</td>
+<td>Ej beviljad</td>
+<td>other</td>
+<td>Göteborg</td>
+<td>Västra Götaland</td>
+<td>...</td>
+<td>ABF Göteborg Vuxenutbildning AB</td>
+<td>Privat</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>False</td>
+<td>long</td>
+<td>unknown</td>
+<td>2020_Tabell 3</td>
+</tr>
+<tr>
+<th>3</th>
+<td>2020</td>
+<td>resultat-ansokningsomgang-2020.xlsx</td>
+<td>Tabell 3</td>
+<td>MYH 2020/4403</td>
+<td>.NET Utvecklare</td>
+<td>Data/IT</td>
+<td>Beviljad</td>
+<td>approved</td>
+<td>Göteborg</td>
+<td>Västra Götaland</td>
+<td>...</td>
+<td>Plushögskolan AB - Teknikhögskolan</td>
+<td>Privat</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>True</td>
+<td>long</td>
+<td>unknown</td>
+<td>2020_Tabell 3</td>
+</tr>
+<tr>
+<th>4</th>
+<td>2020</td>
+<td>resultat-ansokningsomgang-2020.xlsx</td>
+<td>Tabell 3</td>
+<td>MYH 2020/5766</td>
+<td>.NET-utvecklare</td>
+<td>Data/IT</td>
+<td>Beviljad</td>
+<td>approved</td>
+<td>Stockholm</td>
+<td>Stockholm</td>
+<td>...</td>
+<td>IT-Högskolan Stockholm AB</td>
+<td>Privat</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>&lt;NA&gt;</td>
+<td>True</td>
+<td>long</td>
+<td>unknown</td>
+<td>2020_Tabell 3</td>
+</tr>
+</tbody>
+</table>
+<p>5 rows × 24 columns</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=94461e84">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h3 id="Aggregated-Summary">Aggregated Summary<a class="anchor-link" href="#Aggregated-Summary">¶</a></h3><p>Although most downstream statistics are calculated in SQL in Part 3, this notebook also includes a small pandas aggregation step to validate the curated dataset and demonstrate how the enriched fields can support analysis.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=5cd9de0c">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [11]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">yearly_summary</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">curated_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"source_year"</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">agg</span><span class="p">(</span>
+        <span class="n">total_applications</span><span class="o">=</span><span class="p">(</span><span class="s2">"application_id"</span><span class="p">,</span> <span class="s2">"count"</span><span class="p">),</span>
+        <span class="n">approved_applications</span><span class="o">=</span><span class="p">(</span><span class="s2">"is_approved"</span><span class="p">,</span> <span class="s2">"sum"</span><span class="p">),</span>
+        <span class="n">unique_providers</span><span class="o">=</span><span class="p">(</span><span class="s2">"provider_name"</span><span class="p">,</span> <span class="s2">"nunique"</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+<span class="p">)</span>
+
+<span class="n">yearly_summary</span><span class="p">[</span><span class="s2">"approval_rate"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">yearly_summary</span><span class="p">[</span><span class="s2">"approved_applications"</span><span class="p">]</span>
+    <span class="o">/</span> <span class="n">yearly_summary</span><span class="p">[</span><span class="s2">"total_applications"</span><span class="p">]</span>
+    <span class="o">*</span> <span class="mi">100</span>
+<span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">yearly_summary</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[11]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>source_year</th>
+<th>total_applications</th>
+<th>approved_applications</th>
+<th>unique_providers</th>
+<th>approval_rate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>2020</td>
+<td>1482</td>
+<td>484</td>
+<td>256</td>
+<td>32.7</td>
+</tr>
+<tr>
+<th>1</th>
+<td>2021</td>
+<td>1238</td>
+<td>426</td>
+<td>248</td>
+<td>34.4</td>
+</tr>
+<tr>
+<th>2</th>
+<td>2022</td>
+<td>1207</td>
+<td>420</td>
+<td>254</td>
+<td>34.8</td>
+</tr>
+<tr>
+<th>3</th>
+<td>2023</td>
+<td>1258</td>
+<td>477</td>
+<td>249</td>
+<td>37.9</td>
+</tr>
+<tr>
+<th>4</th>
+<td>2024</td>
+<td>1272</td>
+<td>344</td>
+<td>250</td>
+<td>27.0</td>
+</tr>
+<tr>
+<th>5</th>
+<td>2025</td>
+<td>1184</td>
+<td>462</td>
+<td>242</td>
+<td>39.0</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
@@ -8388,18 +8776,8 @@ Columns: 24
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Step-7:-Validation-and-Quality-Checks">Step 7: Validation and Quality Checks<a class="anchor-link" href="#Step-7:-Validation-and-Quality-Checks">¶</a></h2><p>The curated dataset was validated through both exploratory inspection and structured quality checks.</p>
-<p>The validation process focused on:</p>
-<ul>
-<li>dataset completeness</li>
-<li>missing values</li>
-<li>duplicate detection</li>
-<li>application-level uniqueness</li>
-<li>required schema coverage</li>
-<li>categorical consistency in normalized fields</li>
-</ul>
-<p>The duplicate application check uses the combination of source_year and diarienummer because this represents the practical business key for the curated applications dataset.</p>
-<p>The required column check confirms that the curated dataset contains the core fields expected for the main applications table. Duplicate checks are performed at the application level using source year and diarienummer, because this combination represents the practical business key in the curated dataset.</p>
+<h2 id="Step-8:-Validation-and-Quality-Checks">Step 8: Validation and Quality Checks<a class="anchor-link" href="#Step-8:-Validation-and-Quality-Checks">¶</a></h2><p>The validation checks are performed on the final English curated dataset.</p>
+<p>This verifies that the translated schema is ready for database loading, API queries, and dashboard filtering.</p>
 </div>
 </div>
 </div>
@@ -8408,7 +8786,7 @@ Columns: 24
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [12]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"--------- DATASET OVERVIEW ---------"</span><span class="p">)</span>
@@ -8422,13 +8800,13 @@ Columns: 24
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">--------- PRIMARY KEY VALIDATION ---------"</span><span class="p">)</span>
 
-<span class="n">missing_registry_numbers</span> <span class="o">=</span> <span class="n">curated_df</span><span class="p">[</span><span class="s2">"diarienummer"</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-<span class="n">duplicate_registry_numbers</span> <span class="o">=</span> <span class="n">curated_df</span><span class="p">[</span><span class="s2">"diarienummer"</span><span class="p">]</span><span class="o">.</span><span class="n">duplicated</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">missing_application_ids</span> <span class="o">=</span> <span class="n">curated_df</span><span class="p">[</span><span class="s2">"application_id"</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">duplicate_application_ids</span> <span class="o">=</span> <span class="n">curated_df</span><span class="p">[</span><span class="s2">"application_id"</span><span class="p">]</span><span class="o">.</span><span class="n">duplicated</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Missing diarienummer values: </span><span class="si">{</span><span class="n">missing_registry_numbers</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Duplicate diarienummer values: </span><span class="si">{</span><span class="n">duplicate_registry_numbers</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Missing application_id values: </span><span class="si">{</span><span class="n">missing_application_ids</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Duplicate application_id values: </span><span class="si">{</span><span class="n">duplicate_application_ids</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-<span class="c1"># Validation confirms that diarienummer contains</span>
+<span class="c1"># Validation confirms that application_id contains</span>
 <span class="c1"># no missing or duplicate values and is therefore</span>
 <span class="c1"># suitable as the relational primary key.</span>
 
@@ -8438,18 +8816,27 @@ Columns: 24
     <span class="s2">"source_year"</span><span class="p">,</span>
     <span class="s2">"source_file"</span><span class="p">,</span>
     <span class="s2">"source_sheet"</span><span class="p">,</span>
-    <span class="s2">"diarienummer"</span><span class="p">,</span>
-    <span class="s2">"utbildningsnamn"</span><span class="p">,</span>
-    <span class="s2">"utbildningsomrade"</span><span class="p">,</span>
-    <span class="s2">"beslut"</span><span class="p">,</span>
+    <span class="s2">"record_source"</span><span class="p">,</span>
+    <span class="s2">"application_id"</span><span class="p">,</span>
+    <span class="s2">"education_name"</span><span class="p">,</span>
+    <span class="s2">"education_area"</span><span class="p">,</span>
+    <span class="s2">"decision"</span><span class="p">,</span>
     <span class="s2">"decision_normalized"</span><span class="p">,</span>
-    <span class="s2">"kommun"</span><span class="p">,</span>
-    <span class="s2">"lan"</span><span class="p">,</span>
-    <span class="s2">"yh_poang"</span><span class="p">,</span>
-    <span class="s2">"studieform"</span><span class="p">,</span>
-    <span class="s2">"studietakt_procent"</span><span class="p">,</span>
-    <span class="s2">"utbildningsanordnare"</span><span class="p">,</span>
-    <span class="s2">"huvudmannatyp"</span><span class="p">,</span>
+    <span class="s2">"municipality"</span><span class="p">,</span>
+    <span class="s2">"region"</span><span class="p">,</span>
+    <span class="s2">"yh_credits"</span><span class="p">,</span>
+    <span class="s2">"study_form"</span><span class="p">,</span>
+    <span class="s2">"study_form_normalized"</span><span class="p">,</span>
+    <span class="s2">"study_pace_percent"</span><span class="p">,</span>
+    <span class="s2">"provider_name"</span><span class="p">,</span>
+    <span class="s2">"provider_type"</span><span class="p">,</span>
+    <span class="s2">"sun5_field"</span><span class="p">,</span>
+    <span class="s2">"sun5_field_name"</span><span class="p">,</span>
+    <span class="s2">"seqf_level"</span><span class="p">,</span>
+    <span class="s2">"narrow_occupational_area"</span><span class="p">,</span>
+    <span class="s2">"is_approved"</span><span class="p">,</span>
+    <span class="s2">"education_length"</span><span class="p">,</span>
+    <span class="s2">"sector_category"</span><span class="p">,</span>
 <span class="p">]</span>
 
 <span class="n">missing_required_columns</span> <span class="o">=</span> <span class="p">[</span>
@@ -8464,7 +8851,7 @@ Columns: 24
 <span class="n">inspect_columns</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">"decision_normalized"</span><span class="p">,</span>
     <span class="s2">"study_form_normalized"</span><span class="p">,</span>
-    <span class="s2">"huvudmannatyp"</span><span class="p">,</span>
+    <span class="s2">"provider_type"</span><span class="p">,</span>
     <span class="s2">"sector_category"</span><span class="p">,</span>
 <span class="p">]</span>
 
@@ -8492,36 +8879,36 @@ Columns: 24
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
 <pre>--------- DATASET OVERVIEW ---------
 &lt;class 'pandas.DataFrame'&gt;
-RangeIndex: 4921 entries, 0 to 4920
+RangeIndex: 7641 entries, 0 to 7640
 Data columns (total 24 columns):
- #   Column                 Non-Null Count  Dtype        
----  ------                 --------------  -----        
- 0   source_year            4921 non-null   Int64        
- 1   source_file            4921 non-null   string       
- 2   source_sheet           4921 non-null   string       
- 3   diarienummer           4921 non-null   string       
- 4   utbildningsnamn        4921 non-null   string       
- 5   utbildningsomrade      4921 non-null   string       
- 6   beslut                 4921 non-null   string       
- 7   decision_normalized    4921 non-null   string       
- 8   kommun                 4921 non-null   string       
- 9   lan                    4921 non-null   string       
- 10  yh_poang               4921 non-null   Int64        
- 11  studieform             4921 non-null   string       
- 12  study_form_normalized  4921 non-null   string       
- 13  studietakt_procent     4921 non-null   Int64        
- 14  utbildningsanordnare   4921 non-null   string       
- 15  huvudmannatyp          4921 non-null   string       
- 16  sun5_inriktning        3714 non-null   string       
- 17  sun5_inriktning_namn   3714 non-null   string       
- 18  seqf_niva              3661 non-null   Float64      
- 19  smalt_yrkesomrade      3714 non-null   string       
- 20  is_approved            4921 non-null   bool[pyarrow]
- 21  education_length       4921 non-null   str          
- 22  sector_category        4921 non-null   str          
- 23  record_source          4921 non-null   str          
+ #   Column                    Non-Null Count  Dtype        
+---  ------                    --------------  -----        
+ 0   source_year               7641 non-null   Int64        
+ 1   source_file               7641 non-null   string       
+ 2   source_sheet              7641 non-null   string       
+ 3   application_id            7641 non-null   string       
+ 4   education_name            7641 non-null   string       
+ 5   education_area            7641 non-null   string       
+ 6   decision                  7641 non-null   string       
+ 7   decision_normalized       7641 non-null   string       
+ 8   municipality              7641 non-null   string       
+ 9   region                    7641 non-null   string       
+ 10  yh_credits                7641 non-null   Int64        
+ 11  study_form                7641 non-null   string       
+ 12  study_form_normalized     7641 non-null   string       
+ 13  study_pace_percent        7641 non-null   Int64        
+ 14  provider_name             7641 non-null   string       
+ 15  provider_type             7641 non-null   string       
+ 16  sun5_field                3714 non-null   string       
+ 17  sun5_field_name           3714 non-null   string       
+ 18  seqf_level                3661 non-null   Float64      
+ 19  narrow_occupational_area  3714 non-null   string       
+ 20  is_approved               7641 non-null   bool[pyarrow]
+ 21  education_length          7641 non-null   str          
+ 22  sector_category           7641 non-null   str          
+ 23  record_source             7641 non-null   str          
 dtypes: Float64(1), Int64(3), bool[pyarrow](1), str(3), string(16)
-memory usage: 2.1 MB
+memory usage: 3.2 MB
 
 --------- MISSING VALUES ---------
 </pre>
@@ -8530,30 +8917,30 @@ memory usage: 2.1 MB
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>source_year                 0
-source_file                 0
-source_sheet                0
-diarienummer                0
-utbildningsnamn             0
-utbildningsomrade           0
-beslut                      0
-decision_normalized         0
-kommun                      0
-lan                         0
-yh_poang                    0
-studieform                  0
-study_form_normalized       0
-studietakt_procent          0
-utbildningsanordnare        0
-huvudmannatyp               0
-sun5_inriktning          1207
-sun5_inriktning_namn     1207
-seqf_niva                1260
-smalt_yrkesomrade        1207
-is_approved                 0
-education_length            0
-sector_category             0
-record_source               0
+<pre>source_year                    0
+source_file                    0
+source_sheet                   0
+application_id                 0
+education_name                 0
+education_area                 0
+decision                       0
+decision_normalized            0
+municipality                   0
+region                         0
+yh_credits                     0
+study_form                     0
+study_form_normalized          0
+study_pace_percent             0
+provider_name                  0
+provider_type                  0
+sun5_field                  3927
+sun5_field_name             3927
+seqf_level                  3980
+narrow_occupational_area    3927
+is_approved                    0
+education_length               0
+sector_category                0
+record_source                  0
 dtype: int64</pre>
 </div>
 </div>
@@ -8565,11 +8952,8 @@ dtype: int64</pre>
 0
 
 --------- PRIMARY KEY VALIDATION ---------
-Missing diarienummer values: 0
-Duplicate diarienummer values: 0
-
---------- DUPLICATE APPLICATION CHECK ---------
-0
+Missing application_id values: 0
+Duplicate application_id values: 0
 
 --------- REQUIRED COLUMN CHECK ---------
 []
@@ -8614,10 +8998,15 @@ Duplicate diarienummer values: 0
 <tr>
 <th>1</th>
 <td>approved</td>
-<td>1703</td>
+<td>2613</td>
 </tr>
 <tr>
 <th>2</th>
+<td>other</td>
+<td>1810</td>
+</tr>
+<tr>
+<th>3</th>
 <td>withdrawn</td>
 <td>1</td>
 </tr>
@@ -8663,12 +9052,12 @@ Duplicate diarienummer values: 0
 <tr>
 <th>0</th>
 <td>on_site</td>
-<td>2572</td>
+<td>4079</td>
 </tr>
 <tr>
 <th>1</th>
 <td>distance</td>
-<td>2349</td>
+<td>3562</td>
 </tr>
 </tbody>
 </table>
@@ -8679,7 +9068,7 @@ Duplicate diarienummer values: 0
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
 <pre>
---- huvudmannatyp ---
+--- provider_type ---
 </pre>
 </div>
 </div>
@@ -8704,7 +9093,7 @@ Duplicate diarienummer values: 0
 <thead>
 <tr style="text-align: right;">
 <th></th>
-<th>huvudmannatyp</th>
+<th>provider_type</th>
 <th>count</th>
 </tr>
 </thead>
@@ -8712,12 +9101,12 @@ Duplicate diarienummer values: 0
 <tr>
 <th>0</th>
 <td>Privat</td>
-<td>4073</td>
+<td>6284</td>
 </tr>
 <tr>
 <th>1</th>
 <td>Kommun</td>
-<td>779</td>
+<td>1261</td>
 </tr>
 <tr>
 <th>2</th>
@@ -8726,8 +9115,13 @@ Duplicate diarienummer values: 0
 </tr>
 <tr>
 <th>3</th>
+<td>Landsting</td>
+<td>23</td>
+</tr>
+<tr>
+<th>4</th>
 <td>Statlig</td>
-<td>9</td>
+<td>13</td>
 </tr>
 </tbody>
 </table>
@@ -8771,7 +9165,7 @@ Duplicate diarienummer values: 0
 <tr>
 <th>0</th>
 <td>unknown</td>
-<td>1207</td>
+<td>3927</td>
 </tr>
 <tr>
 <th>1</th>
@@ -8852,7 +9246,7 @@ Duplicate diarienummer values: 0
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [11]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [13]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">validation_summary</span> <span class="o">=</span> <span class="n">build_validation_summary</span><span class="p">(</span><span class="n">curated_df</span><span class="p">)</span>
@@ -8897,21 +9291,21 @@ Duplicate diarienummer values: 0
 <tbody>
 <tr>
 <th>0</th>
-<td>missing_diarienummer</td>
+<td>missing_application_id</td>
 <td>0</td>
 <td>critical</td>
 <td>NaN</td>
 </tr>
 <tr>
 <th>1</th>
-<td>duplicate_diarienummer</td>
+<td>duplicate_application_id</td>
 <td>0</td>
 <td>warning</td>
 <td>NaN</td>
 </tr>
 <tr>
 <th>2</th>
-<td>missing_utbildningsanordnare</td>
+<td>missing_provider_name</td>
 <td>0</td>
 <td>warning</td>
 <td>NaN</td>
@@ -8932,28 +9326,28 @@ Duplicate diarienummer values: 0
 </tr>
 <tr>
 <th>5</th>
-<td>missing_sun5_fields</td>
-<td>1207</td>
+<td>missing_sun5_field</td>
+<td>3927</td>
 <td>info</td>
 <td>NaN</td>
 </tr>
 <tr>
 <th>6</th>
-<td>utbildningsnamn_max_length</td>
+<td>education_name_max_length</td>
 <td>0</td>
 <td>warning</td>
-<td>106.0</td>
+<td>200.0</td>
 </tr>
 <tr>
 <th>7</th>
-<td>utbildningsanordnare_max_length</td>
+<td>provider_name_max_length</td>
 <td>0</td>
 <td>warning</td>
 <td>73.0</td>
 </tr>
 <tr>
 <th>8</th>
-<td>sun5_inriktning_namn_max_length</td>
+<td>sun5_field_name_max_length</td>
 <td>0</td>
 <td>warning</td>
 <td>87.0</td>
@@ -8972,7 +9366,7 @@ Duplicate diarienummer values: 0
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Step-8:-Export-Curated-Dataset">Step 8: Export Curated Dataset<a class="anchor-link" href="#Step-8:-Export-Curated-Dataset">¶</a></h2><p>After validation and quality checks, the curated dataset was exported for further use.</p>
+<h2 id="Step-9:-Export-Curated-Dataset">Step 9: Export Curated Dataset<a class="anchor-link" href="#Step-9:-Export-Curated-Dataset">¶</a></h2><p>After validation and quality checks, the curated dataset was exported for further use.</p>
 <p>The exported CSV represents the cleaned, harmonized, enriched, and combined dataset. It is the handoff point between the pandas pipeline and the later SQL/FastAPI part of the project.</p>
 <p>Exporting the curated data makes the transformation reproducible: the same source files and pipeline rules can be rerun to produce a fresh dataset when the raw files change or when new years are added.</p>
 </div>
@@ -8983,7 +9377,7 @@ Duplicate diarienummer values: 0
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [12]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [14]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">CURATED_DATA_PATH</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span>
